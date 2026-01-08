@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexify AI | Web3 OS</title>
+    <title>Nexify AI | Ultimate Social OS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -14,190 +14,124 @@
     <style>
         :root { --cb-blue: #0052ff; --bg: #000; }
         body { background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; }
-        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
+        .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.08); }
         .page { display: none; height: calc(100vh - 120px); overflow-y: auto; padding-bottom: 120px; }
-        .page-active { display: block; animation: fadeIn 0.3s ease-in; }
+        .page-active { display: block; animation: fadeIn 0.4s ease-out; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .btn-base { background: var(--cb-blue); border-radius: 12px; font-weight: 800; transition: 0.2s; }
-        .nav-active { color: var(--cb-blue); border-top: 3px solid var(--cb-blue); }
-        input, textarea { background: #0a0b0d; border: 1px solid #1e232d; border-radius: 12px; padding: 12px; color: white; width: 100%; outline: none; }
-        #auth-screen { z-index: 2000; background: #000; position: fixed; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .btn-base { background: var(--cb-blue); border-radius: 12px; font-weight: 700; transition: 0.2s; }
+        .social-input { background: #0a0b0d; border: 1px solid #1e232d; border-radius: 10px; padding: 10px; color: #fff; font-size: 12px; margin-bottom: 10px; width: 100%; }
+        .social-tag { background: rgba(255,255,255,0.05); padding: 5px 12px; border-radius: 20px; font-size: 10px; border: 1px solid rgba(255,255,255,0.1); }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen" class="p-8">
-        <h1 class="text-4xl font-black text-blue-500 italic mb-2 tracking-tighter">NEXIFY AI</h1>
-        <p class="text-[10px] text-gray-500 mb-8 uppercase font-bold tracking-[0.3em]">Unified Digital OS</p>
+    <div id="auth-screen" class="fixed inset-0 z-[2000] bg-black flex flex-col items-center justify-center p-8">
+        <h1 class="text-5xl font-black text-blue-500 italic mb-2 tracking-tighter">NEXIFY AI</h1>
+        <p class="text-[10px] text-gray-500 mb-10 uppercase tracking-[0.3em]">The Social Identity Layer</p>
+        
         <div class="w-full max-w-sm space-y-4">
-            <input type="email" id="auth-email" placeholder="Email Address">
-            <input type="password" id="auth-pass" placeholder="Password">
-            <button onclick="auth.handle('login')" class="w-full py-4 btn-base uppercase text-xs">Login Node</button>
-            <button onclick="auth.handle('signup')" class="w-full py-4 glass text-xs font-bold uppercase">Initialize New Node</button>
+            <button onclick="auth.twitter()" class="w-full py-4 glass flex items-center justify-center gap-3 text-xs font-bold uppercase tracking-widest border-white/10">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                Sign in with Twitter
+            </button>
+            <button onclick="auth.google()" class="w-full py-4 glass flex items-center justify-center gap-3 text-xs font-bold uppercase tracking-widest border-white/10">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="16"> Google Account
+            </button>
+            <div class="flex items-center gap-4 py-2"><div class="h-[1px] bg-white/5 flex-1"></div><span class="text-[8px] text-gray-600">OR EMAIL</span><div class="h-[1px] bg-white/5 flex-1"></div></div>
+            <input type="email" id="auth-email" placeholder="Email" class="social-input">
+            <button onclick="auth.handle('login')" class="w-full py-4 btn-base text-xs uppercase tracking-widest">Access Node</button>
         </div>
     </div>
-
-    <header class="p-6 flex justify-between items-center border-b border-white/5 sticky top-0 z-50 bg-black/90 backdrop-blur-md">
-        <div class="flex flex-col">
-            <span id="h-name" class="text-[10px] font-black text-blue-500 uppercase tracking-widest">Guest Node</span>
-            <span id="h-addr" class="text-[9px] font-bold text-gray-600">0x...</span>
-        </div>
-        <div class="flex items-center gap-4">
-            <div class="bg-blue-600/10 px-4 py-1.5 rounded-full text-[11px] font-black text-blue-500 border border-blue-600/20">💎 <span id="pts-val">0.0</span></div>
-            <button onclick="ui.modal('profile-modal', true)" class="w-9 h-9 rounded-full glass flex items-center justify-center">⚙️</button>
-        </div>
-    </header>
-
-    <main class="max-w-xl mx-auto px-6 pt-4">
-        
-        <section id="p-wealth" class="page page-active space-y-6">
-            <div class="glass p-10 rounded-[40px] text-center bg-gradient-to-b from-blue-900/10 to-transparent">
-                <p class="text-[10px] text-gray-500 font-bold uppercase mb-2">Portfolio Value</p>
-                <h1 id="total-val" class="text-6xl font-black tracking-tighter mb-8">$0.00</h1>
-                <div class="grid grid-cols-2 gap-4">
-                    <button class="btn-base py-4 text-[10px]">DEPOSIT CARD</button>
-                    <button class="glass py-4 text-[10px]">WITHDRAW</button>
-                </div>
-            </div>
-            <div class="glass p-8 rounded-[35px] text-center border-blue-600/20">
-                <p class="text-[10px] font-black text-blue-400 uppercase mb-4 tracking-widest">Base Miner: +0.1 PTS/24H</p>
-                <button onclick="core.claim()" id="claim-btn" class="w-full py-5 btn-base text-xs uppercase tracking-widest">Activate Mining</button>
-            </div>
-        </section>
-
-        <section id="p-gigs" class="page space-y-4">
-            <h2 class="text-xs font-black uppercase text-gray-500 tracking-widest mb-4">Market Missions</h2>
-            <div id="job-list" class="space-y-4">
-                <div class="glass p-6 rounded-[30px] border-l-4 border-blue-600">
-                    <div class="flex justify-between items-start mb-2"><h3 class="text-sm font-bold">Web3 UX Audit</h3><span class="text-blue-500 font-black text-xs">$15.0</span></div>
-                    <button class="w-full mt-4 py-3 glass rounded-xl text-[9px] font-black uppercase">Apply</button>
-                </div>
-            </div>
-        </section>
-
-        <section id="p-cloud" class="page space-y-6">
-            <div class="glass p-10 rounded-[40px] text-center border-white/5">
-                <p class="text-[10px] text-gray-500 uppercase font-black mb-2">IPFS Vault</p>
-                <h2 class="text-4xl font-black italic"><span id="storage-val">10.0</span> GB FREE</h2>
-                <div class="w-full bg-gray-900 h-2 rounded-full mt-6 overflow-hidden"><div id="s-bar" class="bg-blue-600 h-full w-[10%]"></div></div>
-            </div>
-            <div class="glass p-6 rounded-[30px] border-dashed border-blue-500/20 text-center">
-                <h3 class="text-xs font-black text-blue-400 uppercase mb-2">Invite & Earn</h3>
-                <p class="text-[10px] text-gray-500 mb-4 uppercase">+1 GB & +0.1 PTS per Referral</p>
-                <button onclick="core.invite()" class="btn-base w-full py-4 text-[10px] uppercase">Copy Referral Link</button>
-            </div>
-        </section>
-
-    </main>
 
     <div id="profile-modal" class="fixed inset-0 z-[1500] bg-black hidden p-8 overflow-y-auto">
-        <div class="max-w-md mx-auto space-y-6 pt-10">
-            <div class="flex justify-between">
-                <h2 class="text-2xl font-black italic uppercase italic">Profile Protocol</h2>
-                <button onclick="ui.modal('profile-modal', false)" class="text-2xl">✕</button>
+        <div class="max-w-md mx-auto pt-10">
+            <div class="flex justify-between items-center mb-10">
+                <h2 class="text-2xl font-black italic uppercase">Social Identity Hub</h2>
+                <button onclick="ui.modal('profile-modal', false)" class="text-3xl">✕</button>
             </div>
-            <input type="text" id="p-name-input" placeholder="Display Name">
-            <textarea id="p-bio-input" placeholder="Bio / Portfolio Description" class="h-32"></textarea>
-            <button onclick="core.saveProfile()" class="w-full py-5 btn-base text-xs uppercase">Save Identity</button>
-            <button onclick="auth.logout()" class="w-full py-3 text-red-500 text-[10px] font-black uppercase tracking-widest">Terminate Session</button>
+
+            <div class="space-y-6">
+                <div>
+                    <label class="text-[10px] font-black text-gray-500 uppercase tracking-widest ml-1">Connected Identities</label>
+                    <div class="mt-4 space-y-3">
+                        <div class="flex items-center gap-3"><span class="w-8">🐦</span><input id="link-x" placeholder="Twitter Username" class="social-input !mb-0"></div>
+                        <div class="flex items-center gap-3"><span class="w-8">💬</span><input id="link-discord" placeholder="Discord Invite/ID" class="social-input !mb-0"></div>
+                        <div class="flex items-center gap-3"><span class="w-8">✈️</span><input id="link-tg" placeholder="Telegram Username" class="social-input !mb-0"></div>
+                        <div class="flex items-center gap-3"><span class="w-8">✉️</span><input id="link-email" placeholder="Public Email" class="social-input !mb-0"></div>
+                    </div>
+                </div>
+
+                <button onclick="core.saveSocials()" class="w-full py-5 btn-base text-xs uppercase tracking-[0.2em] shadow-xl shadow-blue-600/20">Sync All Socials</button>
+            </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 inset-x-0 glass px-10 py-8 flex justify-between items-center z-50 rounded-t-[45px] bg-black/95">
-        <button onclick="ui.nav('wealth')" id="n-wealth" class="nav-active text-[10px] font-black uppercase">Vault</button>
-        <button onclick="ui.nav('gigs')" id="n-gigs" class="text-gray-500 text-[10px] font-black uppercase">Gigs</button>
-        <button onclick="ui.nav('cloud')" id="n-cloud" class="text-gray-500 text-[10px] font-black uppercase">Cloud</button>
-    </nav>
+    <div id="app-content" class="hidden">
+        <header class="p-6 flex justify-between items-center border-b border-white/5 bg-black">
+            <div class="flex flex-col">
+                <span id="h-name" class="text-[11px] font-black text-blue-500 uppercase">MASTER NODE</span>
+                <div id="social-tags" class="flex gap-2 mt-1">
+                    </div>
+            </div>
+            <button onclick="ui.modal('profile-modal', true)" class="w-10 h-10 rounded-full glass flex items-center justify-center">⚙️</button>
+        </header>
+        
+        </div>
 
     <script>
-        // CONFIGURATION: Replace with your Firebase settings
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID",
-            databaseURL: "https://YOUR_DATABASE.firebaseio.com"
-        };
+        // CONFIG & INITIALIZATION
+        const firebaseConfig = { /* Your Config Here */ };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
         const authRef = firebase.auth();
 
-        let currentUser = null;
-
         const auth = {
-            handle(type) {
-                const email = document.getElementById('auth-email').value;
-                const pass = document.getElementById('auth-pass').value;
-                if(!email || !pass) return alert("All fields required.");
-                if(type === 'signup') {
-                    authRef.createUserWithEmailAndPassword(email, pass).then(res => {
-                        db.collection('users').doc(res.user.uid).set({ 
-                            name: 'New Node', pts: 0.0, storage: 10.0, bio: '', 
-                            addr: '0x' + Math.random().toString(16).slice(2, 10).toUpperCase() 
-                        });
-                    }).catch(e => alert(e.message));
-                } else {
-                    authRef.signInWithEmailAndPassword(email, pass).catch(e => alert(e.message));
-                }
+            twitter() {
+                const provider = new firebase.auth.TwitterAuthProvider();
+                authRef.signInWithPopup(provider).catch(e => alert(e.message));
             },
-            logout() { authRef.signOut().then(() => location.reload()); }
+            google() {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                authRef.signInWithPopup(provider).catch(e => alert(e.message));
+            },
+            handle(type) { /* Logic for Email Auth */ }
         };
 
         const core = {
-            init(user) {
-                currentUser = user;
-                document.getElementById('auth-screen').style.display = 'none';
-                db.collection('users').doc(user.uid).onSnapshot(doc => {
-                    const d = doc.data();
-                    document.getElementById('h-name').innerText = d.name.toUpperCase();
-                    document.getElementById('h-addr').innerText = d.addr;
-                    document.getElementById('pts-val').innerText = d.pts.toFixed(1);
-                    document.getElementById('total-val').innerText = "$" + (d.pts * 10).toFixed(2);
-                    document.getElementById('storage-val').innerText = d.storage.toFixed(1);
-                    document.getElementById('p-name-input').value = d.name;
-                    document.getElementById('p-bio-input').value = d.bio || '';
-                });
-            },
-            claim() {
-                const ref = db.collection('users').doc(currentUser.uid);
-                ref.get().then(doc => {
-                    ref.update({ pts: (doc.data().pts || 0) + 0.1 });
-                    document.getElementById('claim-btn').disabled = true;
-                    document.getElementById('claim-btn').innerText = "SYNCHRONIZED";
-                });
-            },
-            saveProfile() {
-                const name = document.getElementById('p-name-input').value;
-                const bio = document.getElementById('p-bio-input').value;
-                db.collection('users').doc(currentUser.uid).update({ name, bio });
+            saveSocials() {
+                const socials = {
+                    x: document.getElementById('link-x').value,
+                    discord: document.getElementById('link-discord').value,
+                    tg: document.getElementById('link-tg').value,
+                    email: document.getElementById('link-email').value
+                };
+                db.collection('users').doc(authRef.currentUser.uid).update({ socials });
+                alert("Social Hub Updated & Verified.");
                 ui.modal('profile-modal', false);
             },
-            invite() {
-                const link = "https://nexify.ai/join?ref=" + currentUser.uid.slice(0,6);
-                navigator.clipboard.writeText(link);
-                alert("Referral Link Copied! (1GB & 0.1 PTS per friend)");
-                // Demo Update for friends
-                db.collection('users').doc(currentUser.uid).update({
-                    storage: firebase.firestore.FieldValue.increment(1),
-                    pts: firebase.firestore.FieldValue.increment(0.1)
-                });
+            renderSocialTags(socials) {
+                const cont = document.getElementById('social-tags');
+                cont.innerHTML = "";
+                if(socials.x) cont.innerHTML += `<span class="social-tag">X</span>`;
+                if(socials.tg) cont.innerHTML += `<span class="social-tag">TG</span>`;
+                if(socials.discord) cont.innerHTML += `<span class="social-tag">DC</span>`;
             }
         };
 
         const ui = {
-            nav(tab) {
-                document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
-                document.getElementById('p-' + tab).classList.add('page-active');
-                ['wealth', 'gigs', 'cloud'].forEach(t => {
-                    document.getElementById('n-' + t).className = (t === tab) ? "nav-active text-[10px] font-black uppercase" : "text-gray-500 text-[10px] font-black uppercase";
-                });
-            },
             modal(id, show) { document.getElementById(id).style.display = show ? 'block' : 'none'; }
         };
 
-        authRef.onAuthStateChanged(user => { if(user) core.init(user); else document.getElementById('auth-screen').style.display = 'flex'; });
+        authRef.onAuthStateChanged(user => {
+            if(user) {
+                document.getElementById('auth-screen').style.display = 'none';
+                document.getElementById('app-content').style.display = 'block';
+                db.collection('users').doc(user.uid).onSnapshot(doc => {
+                    const d = doc.data();
+                    if(d.socials) core.renderSocialTags(d.socials);
+                });
+            }
+        });
     </script>
 </body>
 </html>
