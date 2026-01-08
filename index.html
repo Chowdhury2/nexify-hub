@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexify AI | 100% Functional OS</title>
+    <title>Nexify AI | Ultimate Social-DeFi OS</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
@@ -11,189 +12,215 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --primary: #3b82f6; --accent: #a855f7; --dark: #000; }
-        body { background: var(--dark); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; }
-        .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.08); }
-        .page { display: none; height: calc(100vh - 160px); overflow-y: auto; padding-bottom: 80px; }
-        .page-active { display: block; animation: fadeIn 0.4s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        .btn-grad { background: linear-gradient(135deg, var(--primary), var(--accent)); transition: 0.3s; }
-        .input-area { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; outline: none; }
-        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        :root { --base: #0052ff; --op: #ff0420; --accent: #7c3aed; --bg: #000; }
+        body { background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; }
+        .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.08); }
+        .page { display: none; height: calc(100vh - 110px); overflow-y: auto; padding-bottom: 120px; }
+        .page-active { display: block; animation: slideUp 0.4s cubic-bezier(0, 0, 0.2, 1); }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .btn-master { background: linear-gradient(135deg, var(--base), var(--accent)); border-radius: 20px; font-weight: 800; transition: 0.3s; }
+        .btn-master:active { transform: scale(0.96); }
+        .nav-active { color: var(--base); font-weight: 800; border-top: 2px solid var(--base); }
+        .card-grad { background: linear-gradient(180deg, rgba(0,82,255,0.15) 0%, rgba(0,0,0,0) 100%); border: 1px solid rgba(0,82,255,0.2); }
     </style>
 </head>
 <body>
 
-    <div id="loader" class="fixed inset-0 bg-black/90 z-[100] hidden flex flex-col items-center justify-center">
-        <div class="loader mb-4"></div>
-        <p id="loader-text" class="text-xs font-black uppercase tracking-widest text-blue-400">Verifying Transaction...</p>
+    <div id="engine-overlay" class="fixed inset-0 z-[1000] bg-black/98 hidden flex flex-col items-center justify-center text-center p-10">
+        <div class="w-20 h-20 border-t-4 border-blue-600 rounded-full animate-spin mb-8"></div>
+        <h2 id="engine-title" class="text-2xl font-black italic tracking-tighter uppercase text-white">Executing On-Chain</h2>
+        <p id="engine-status" class="text-[10px] text-gray-500 uppercase tracking-[0.4em] mt-4">Syncing with Base Mainnet...</p>
     </div>
 
-    <header class="p-6 flex justify-between items-center glass sticky top-0 z-50">
-        <div class="text-2xl font-black italic tracking-tighter text-blue-500">NEXIFY</div>
-        <div class="flex items-center gap-3">
-            <div class="glass px-4 py-1.5 rounded-full text-[10px] font-bold text-blue-400">💎 <span id="pts">14,200</span></div>
-            <button onclick="nexify.connect()" id="wallet-btn" class="bg-white text-black px-4 py-1.5 rounded-full text-[9px] font-black uppercase">Connect</button>
+    <div id="screen-auth" class="fixed inset-0 z-[500] bg-black flex flex-col items-center justify-center p-10 text-center">
+        <div class="mb-14">
+            <h1 class="text-7xl font-black italic tracking-tighter text-blue-600 mb-2">NEXIFY</h1>
+            <p class="text-[9px] font-black text-gray-500 uppercase tracking-[0.6em]">Global Hybrid OS 2026</p>
+        </div>
+        <div class="w-full max-w-xs space-y-4">
+            <button onclick="wallet.init('Smart')" class="w-full py-5 btn-master text-xs uppercase tracking-widest shadow-2xl">Create Smart Account</button>
+            <button onclick="wallet.init('Manual')" class="w-full py-5 glass border-white/10 text-xs uppercase tracking-widest text-gray-400 rounded-[20px]">Manual Web3 Connect</button>
+            <div class="flex justify-center gap-6 pt-10 opacity-30">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="h-4">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" class="h-4">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Google_Pay_Logo.svg" class="h-4">
+            </div>
+        </div>
+    </div>
+
+    <header id="app-header" class="hidden glass p-6 flex justify-between items-center sticky top-0 z-50">
+        <div class="flex flex-col">
+            <span id="w-type" class="text-[8px] font-black text-blue-500 uppercase tracking-widest">Base Node</span>
+            <span id="w-addr" class="text-[10px] font-bold text-gray-400">Not Connected</span>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="glass px-4 py-1.5 rounded-full text-[10px] font-bold text-blue-400 italic">💎 <span id="pts-count">14,200</span></div>
+            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 border border-white/20"></div>
         </div>
     </header>
 
-    <main class="max-w-xl mx-auto px-6 pt-4">
+    <main id="app-main" class="hidden max-w-xl mx-auto px-6 pt-4">
         
-        <div id="page-feed" class="page page-active">
-            <div class="glass p-5 rounded-[30px] border-white/5 mb-6">
-                <textarea id="post-text" placeholder="Share a crypto signal..." class="bg-transparent w-full text-sm outline-none resize-none h-12"></textarea>
-                <div class="flex justify-end mt-2">
-                    <button onclick="social.post()" class="btn-grad px-5 py-2 rounded-xl text-[10px] font-black uppercase">Post</button>
+        <section id="page-hub" class="page page-active space-y-6">
+            <div class="card-grad p-10 rounded-[45px] text-center shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-6"><img src="https://cryptologos.cc/logos/base-base-logo.png" class="h-5"></div>
+                <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Net Assets (Mining Active)</p>
+                <h1 class="text-6xl font-black tracking-tighter mb-8" id="balance-display">$0.00</h1>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="engine.exec('Bridge')" class="bg-white text-black py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Bridge L2</button>
+                    <button onclick="engine.exec('Swap')" class="glass py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Swap 0x</button>
                 </div>
             </div>
-            <div id="feed-container" class="space-y-4"></div>
-        </div>
 
-        <div id="page-os" class="page space-y-6">
-            <div class="glass p-8 rounded-[40px] text-center border-blue-500/20">
-                <span class="text-[9px] font-bold text-gray-500 uppercase tracking-widest">Available Liquidity</span>
-                <h1 id="balance" class="text-5xl font-black tracking-tighter my-4">$0.00</h1>
+            <div class="grid grid-cols-3 gap-3">
+                <div onclick="engine.exec('PayPal')" class="glass p-5 rounded-2xl flex items-center justify-center cursor-pointer">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="h-3">
+                </div>
+                <div onclick="engine.exec('Google Pay')" class="glass p-5 rounded-2xl flex items-center justify-center cursor-pointer">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Google_Pay_Logo.svg" class="h-3">
+                </div>
+                <div onclick="engine.exec('Gift Cards')" class="glass p-5 rounded-2xl flex items-center justify-center cursor-pointer text-[8px] font-black uppercase">Gift Cards</div>
             </div>
-            
-            <div class="grid grid-cols-2 gap-4">
-                <div onclick="nexify.action('Swap')" class="glass p-6 rounded-[30px] cursor-pointer hover:bg-white/5 transition">
-                    <span class="text-2xl block mb-2">🔄</span>
-                    <span class="text-[9px] font-black uppercase text-gray-400">Smart Swap</span>
+
+            <div class="glass p-8 rounded-[40px] border-blue-500/10">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xs font-black uppercase tracking-widest text-blue-500">Mining streak</h3>
+                    <span class="text-[9px] font-bold text-gray-500">24H CYCLE</span>
                 </div>
-                <div onclick="nexify.action('Bridge')" class="glass p-6 rounded-[30px] cursor-pointer hover:bg-white/5 transition">
-                    <span class="text-2xl block mb-2">🌉</span>
-                    <span class="text-[9px] font-black uppercase text-gray-400">Cross Bridge</span>
-                </div>
+                <button onclick="mining.checkIn()" id="mining-btn" class="w-full py-5 btn-master text-[10px] font-black uppercase tracking-[0.2em]">Daily Check-in (+500 PTS)</button>
             </div>
 
             <div class="glass p-8 rounded-[40px] border-white/5">
-                <h3 class="text-xs font-black uppercase tracking-widest mb-6">Social Pay</h3>
-                <input type="text" id="pay-to" placeholder="Search @username or ENS" class="input-area w-full p-4 mb-4 text-sm">
-                <input type="number" id="pay-val" placeholder="Amount (USDC)" class="input-area w-full p-4 mb-6 text-sm">
-                <button onclick="nexify.sendPayment()" class="w-full btn-grad py-4 rounded-2xl font-black text-xs uppercase tracking-widest">Execute Payment</button>
+                <h3 class="text-xs font-black uppercase tracking-widest mb-6">Social Pay @Username</h3>
+                <input type="text" id="target-id" placeholder="Recipient Handle" class="w-full bg-white/5 p-5 rounded-2xl mb-4 text-sm outline-none border border-white/10 focus:border-blue-600">
+                <button onclick="engine.exec('Social Payment')" class="w-full py-5 border-2 border-blue-600 rounded-2xl text-[10px] font-black uppercase text-blue-500 tracking-widest">Send Fund Instantly</button>
             </div>
-        </div>
+        </section>
 
-        <div id="page-help" class="page pt-10 text-center">
-            <div class="glass p-10 rounded-[45px] border-white/5">
-                <div class="w-20 h-20 bg-blue-600 rounded-full mx-auto mb-6 flex items-center justify-center text-3xl">🤖</div>
-                <h2 class="text-xl font-bold mb-4">AI Support Agent</h2>
-                <p class="text-sm text-gray-400 mb-8">Hello! I am your 2026 AI Assistant. I can help with Bridge issues, Wallet recovery, or Social disputes.</p>
-                <button onclick="alert('Support Ticket Created #7742')" class="w-full py-4 border border-blue-500/30 rounded-2xl text-[10px] font-black uppercase text-blue-400">Chat with AI</button>
+        <section id="page-feed" class="page space-y-4">
+            <div class="glass p-6 rounded-[35px] border-white/5">
+                <textarea id="post-input" placeholder="Broadcast to the network..." class="bg-transparent w-full text-sm outline-none resize-none h-12"></textarea>
+                <div class="flex justify-end mt-4"><button onclick="social.post()" class="btn-master px-8 py-2.5 text-[10px] uppercase">Post</button></div>
             </div>
-        </div>
+            <div id="feed-container" class="space-y-4"></div>
+        </section>
 
+        <section id="page-manual" class="page space-y-6">
+            <div class="glass p-8 rounded-[40px]">
+                <h3 class="text-xs font-black uppercase tracking-widest mb-6 text-blue-500">Invite Serial List</h3>
+                <div class="bg-white/5 p-5 rounded-2xl mb-6 flex justify-between items-center">
+                    <span class="text-[10px] font-bold text-gray-500">My Referral:</span>
+                    <span class="text-sm font-black text-blue-500 uppercase">BASE-7742-NXF</span>
+                </div>
+                <div class="space-y-3" id="invite-serial-list">
+                    <div class="flex justify-between text-[11px] p-4 glass rounded-2xl border-white/5"><span>1. @uk_freelancer</span><span class="text-blue-500">+500 PTS</span></div>
+                    <div class="flex justify-between text-[11px] p-4 glass rounded-2xl border-white/5"><span>2. @dubai_pilot</span><span class="text-blue-500">+500 PTS</span></div>
+                </div>
+            </div>
+
+            <div class="glass p-8 rounded-[40px] border-white/5 text-[11px] text-gray-500 font-bold uppercase space-y-4 leading-loose">
+                <p class="text-white">A-Z Manual & Rules:</p>
+                <p>• Smart Wallet: Auto-generated On-chain Identity.</p>
+                <p>• Mining: Points convert to $NXF Native Token on Base.</p>
+                <p>• Gateways: Support for PayPal, Apple Pay, and Cards.</p>
+                <p>• Fees: 0.1% Platform Fee on all Cross-chain Routes.</p>
+            </div>
+        </section>
     </main>
 
-    <nav class="fixed bottom-0 inset-x-0 glass px-12 py-8 border-t border-white/10 flex justify-between items-center z-50 rounded-t-[45px] bg-black/90">
-        <button onclick="ui.nav('feed')" id="n-feed" class="text-blue-500 font-black text-[10px] uppercase">Feed</button>
-        <button onclick="ui.nav('os')" id="n-os" class="text-gray-500 font-black text-[10px] uppercase">OS</button>
-        <button onclick="ui.nav('help')" id="n-help" class="text-gray-500 font-black text-[10px] uppercase">Help</button>
+    <nav id="app-nav" class="hidden fixed bottom-0 inset-x-0 glass px-12 py-9 flex justify-between items-center z-50 rounded-t-[50px] bg-black/95 border-t border-white/5">
+        <button onclick="ui.nav('hub')" id="n-hub" class="nav-active text-[10px] font-black uppercase tracking-widest">Hub</button>
+        <button onclick="ui.nav('feed')" id="n-feed" class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Feed</button>
+        <button onclick="ui.nav('manual')" id="n-manual" class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Manual</button>
     </nav>
 
     <script>
-        // --- 1. CONFIGURATION (Firebase) ---
-        // আপনি এখানে আপনার Firebase databaseURL বসাবেন
+        // --- CORE DATABASE ---
         const firebaseConfig = { databaseURL: "https://nexify-ai-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // --- 2. CORE LOGIC (Bridge, Swap, Wallet) ---
-        const nexify = {
-            wallet: null,
-            points: 14200,
+        let userData = { pts: 14200, balance: 0.00 };
 
-            async connect() {
-                if(window.ethereum) {
-                    const acc = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    this.wallet = acc[0];
-                    document.getElementById('wallet-btn').innerText = this.wallet.substring(0,6) + "...";
-                    this.loadProfile();
-                } else { alert("Please use a Web3 browser!"); }
-            },
-
-            loadProfile() {
-                db.ref('users/' + this.wallet).on('value', (snap) => {
-                    if(snap.val()) {
-                        this.points = snap.val().points;
-                        document.getElementById('pts').innerText = this.points;
-                        document.getElementById('balance').innerText = "$1,240.50";
-                    } else {
-                        db.ref('users/' + this.wallet).set({ points: 14200, handle: 'user_' + this.wallet.substring(2,6) });
-                    }
-                });
-            },
-
-            async sendPayment() {
-                const target = document.getElementById('pay-to').value;
-                const amt = document.getElementById('pay-val').value;
-                if(!target || !amt) return alert("Fill all fields!");
-                
-                this.showLoader("Routing Social Payment...");
+        // --- WALLET ENGINE ---
+        const wallet = {
+            init(mode) {
+                ui.loader(true, `Initializing ${mode} Engine...`);
                 setTimeout(() => {
-                    this.hideLoader();
-                    alert(`Success! Sent ${amt} USDC to ${target} via Social Node.`);
-                }, 3000);
-            },
-
-            action(type) {
-                if(!this.wallet) return alert("Connect Wallet!");
-                this.showLoader(`Initiating ${type} sequence...`);
-                setTimeout(() => {
-                    this.hideLoader();
-                    alert(`${type} complete on Base Mainnet!`);
-                }, 2500);
-            },
-
-            showLoader(text) {
-                document.getElementById('loader').style.display = 'flex';
-                document.getElementById('loader-text').innerText = text;
-            },
-            hideLoader() { document.getElementById('loader').style.display = 'none'; }
-        };
-
-        // --- 3. SOCIAL LOGIC (Feed, Posting) ---
-        const social = {
-            post() {
-                const txt = document.getElementById('post-text').value;
-                if(!txt) return;
-                const postData = { text: txt, author: nexify.wallet || 'Anonymous', time: Date.now() };
-                db.ref('posts').push(postData);
-                document.getElementById('post-text').value = "";
-            },
-            loadFeed() {
-                db.ref('posts').limitToLast(10).on('value', (snap) => {
-                    const container = document.getElementById('feed-container');
-                    container.innerHTML = "";
-                    snap.forEach((child) => {
-                        const data = child.val();
-                        container.innerHTML += `
-                            <div class="glass p-5 rounded-[30px] border-white/5">
-                                <div class="text-[10px] text-blue-400 font-bold mb-2 uppercase">Verified Node: ${data.author.substring(0,6)}</div>
-                                <p class="text-sm text-gray-200">${data.text}</p>
-                                <div class="flex gap-6 mt-4 text-[9px] font-black text-gray-500 uppercase">
-                                    <span>❤️ Like</span><span>🔄 Repost</span><span>💸 Tip</span>
-                                </div>
-                            </div>
-                        `;
-                    });
-                });
+                    const addr = mode === 'Smart' ? "0xSMART_" + Math.random().toString(16).slice(2, 8).toUpperCase() : "0x7742...E921";
+                    document.getElementById('w-type').innerText = mode + " Node";
+                    document.getElementById('w-addr').innerText = addr;
+                    document.getElementById('screen-auth').style.display = 'none';
+                    document.getElementById('app-header').style.display = 'flex';
+                    document.getElementById('app-main').style.display = 'block';
+                    document.getElementById('app-nav').style.display = 'flex';
+                    ui.loader(false);
+                    social.load();
+                }, 2000);
             }
         };
 
-        // --- 4. UI NAVIGATION ---
+        // --- FINANCE ENGINE ---
+        const engine = {
+            exec(type) {
+                ui.loader(true, `Verifying ${type} Protocol...`);
+                const steps = ["Securing Gateway...", "Checking Liquidity...", "Executing on Base L2...", "Success!"];
+                let i = 0;
+                const interval = setInterval(() => {
+                    document.getElementById('engine-status').innerText = steps[i]; i++;
+                    if(i === steps.length) {
+                        clearInterval(interval); ui.loader(false);
+                        alert(`${type} Action Completed via Universal Gateway.`);
+                    }
+                }, 1500);
+            }
+        };
+
+        // --- MINING SYSTEM ---
+        const mining = {
+            checkIn() {
+                userData.pts += 500;
+                document.getElementById('pts-count').innerText = userData.pts.toLocaleString();
+                document.getElementById('balance-display').innerText = "$" + (userData.pts / 10).toFixed(2);
+                alert("Mining Reward: +500 PTS Synchronized!");
+                document.getElementById('mining-btn').disabled = true;
+                document.getElementById('mining-btn').innerText = "Mining Streak Active";
+            }
+        };
+
+        // --- UI & SOCIAL ---
         const ui = {
             nav(tab) {
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
                 document.getElementById('page-' + tab).classList.add('page-active');
-                ['feed', 'os', 'help'].forEach(t => {
-                    document.getElementById('n-' + t).className = (t === tab) ? "text-blue-500 font-black text-[10px] uppercase" : "text-gray-500 font-black text-[10px] uppercase";
+                ['hub', 'feed', 'manual'].forEach(t => {
+                    document.getElementById('n-' + t).className = (t === tab) ? "nav-active text-[10px] font-black uppercase tracking-widest" : "text-gray-500 text-[10px] font-black uppercase tracking-widest";
                 });
+            },
+            loader(show, text = "") {
+                const l = document.getElementById('engine-overlay');
+                l.style.display = show ? 'flex' : 'none';
+                document.getElementById('engine-status').innerText = text;
             }
         };
 
-        window.onload = () => social.loadFeed();
+        const social = {
+            post() {
+                const val = document.getElementById('post-input').value;
+                if(!val) return;
+                db.ref('posts').push({ text: val, time: Date.now() });
+                document.getElementById('post-input').value = "";
+            },
+            load() {
+                db.ref('posts').limitToLast(10).on('value', snap => {
+                    const cont = document.getElementById('feed-container');
+                    cont.innerHTML = "";
+                    snap.forEach(c => {
+                        cont.innerHTML += `<div class="glass p-6 rounded-[35px] border-white/5"><p class="text-sm text-gray-300 leading-relaxed">${c.val().text}</p></div>`;
+                    });
+                });
+            }
+        };
     </script>
 </body>
 </html>
