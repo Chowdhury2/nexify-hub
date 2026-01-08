@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexify AI | Ultimate Social-DeFi OS</title>
+    <title>Nexify AI | Ultimate Social-Finance OS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
@@ -12,183 +12,175 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --base: #0052ff; --op: #ff0420; --accent: #7c3aed; --bg: #000; }
+        :root { --primary: #0052ff; --accent: #ff0420; --bg: #000; }
         body { background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; }
-        .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.08); }
-        .page { display: none; height: calc(100vh - 110px); overflow-y: auto; padding-bottom: 120px; }
-        .page-active { display: block; animation: slideUp 0.4s cubic-bezier(0, 0, 0.2, 1); }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .btn-master { background: linear-gradient(135deg, var(--base), var(--accent)); border-radius: 20px; font-weight: 800; transition: 0.3s; }
-        .btn-master:active { transform: scale(0.96); }
-        .nav-active { color: var(--base); font-weight: 800; border-top: 2px solid var(--base); }
-        .card-grad { background: linear-gradient(180deg, rgba(0,82,255,0.15) 0%, rgba(0,0,0,0) 100%); border: 1px solid rgba(0,82,255,0.2); }
+        .glass { background: rgba(255,255,255,0.02); backdrop-filter: blur(50px); border: 1px solid rgba(255,255,255,0.1); }
+        .page { display: none; height: calc(100vh - 120px); overflow-y: auto; padding-bottom: 120px; }
+        .page-active { display: block; animation: slideUp 0.4s cubic-bezier(0,0,0.2,1); }
+        @keyframes slideUp { from { opacity:0; transform: translateY(30px); } to { opacity:1; transform: translateY(0); } }
+        .btn-universal { background: linear-gradient(135deg, var(--primary), #7000ff); border-radius: 22px; font-weight: 800; transition: 0.2s; }
+        .btn-universal:active { transform: scale(0.96); }
+        .nav-active { color: var(--primary); font-weight: 800; border-top: 2px solid var(--primary); }
+        input, textarea { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; outline: none; width: 100%; color: white; }
     </style>
 </head>
 <body>
 
-    <div id="engine-overlay" class="fixed inset-0 z-[1000] bg-black/98 hidden flex flex-col items-center justify-center text-center p-10">
-        <div class="w-20 h-20 border-t-4 border-blue-600 rounded-full animate-spin mb-8"></div>
-        <h2 id="engine-title" class="text-2xl font-black italic tracking-tighter uppercase text-white">Executing On-Chain</h2>
-        <p id="engine-status" class="text-[10px] text-gray-500 uppercase tracking-[0.4em] mt-4">Syncing with Base Mainnet...</p>
+    <div id="loader" class="fixed inset-0 z-[1000] bg-black hidden flex flex-col items-center justify-center p-10 text-center">
+        <div class="w-16 h-16 border-t-4 border-blue-600 rounded-full animate-spin"></div>
+        <h2 id="loader-title" class="text-xl font-black mt-6 italic uppercase">Processing</h2>
+        <p id="loader-status" class="text-[10px] text-gray-500 uppercase tracking-[0.4em] mt-2">Connecting to Base Mainnet...</p>
     </div>
 
-    <div id="screen-auth" class="fixed inset-0 z-[500] bg-black flex flex-col items-center justify-center p-10 text-center">
-        <div class="mb-14">
-            <h1 class="text-7xl font-black italic tracking-tighter text-blue-600 mb-2">NEXIFY</h1>
-            <p class="text-[9px] font-black text-gray-500 uppercase tracking-[0.6em]">Global Hybrid OS 2026</p>
-        </div>
-        <div class="w-full max-w-xs space-y-4">
-            <button onclick="wallet.init('Smart')" class="w-full py-5 btn-master text-xs uppercase tracking-widest shadow-2xl">Create Smart Account</button>
-            <button onclick="wallet.init('Manual')" class="w-full py-5 glass border-white/10 text-xs uppercase tracking-widest text-gray-400 rounded-[20px]">Manual Web3 Connect</button>
-            <div class="flex justify-center gap-6 pt-10 opacity-30">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="h-4">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" class="h-4">
-                <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Google_Pay_Logo.svg" class="h-4">
+    <div id="profile-modal" class="fixed inset-0 z-[600] bg-black/95 hidden p-8 overflow-y-auto">
+        <div class="max-w-md mx-auto space-y-8">
+            <div class="flex justify-between items-center">
+                <h2 class="text-3xl font-black italic">PROFILE</h2>
+                <button onclick="ui.toggleProfile(false)" class="text-gray-500 text-xl">✕</button>
+            </div>
+            <div class="space-y-6">
+                <div><label class="text-[10px] text-gray-500 font-bold uppercase">Public Name</label>
+                <input type="text" id="p-name" placeholder="Enter Name"></div>
+                <div><label class="text-[10px] text-gray-500 font-bold uppercase">Social Bio</label>
+                <textarea id="p-bio" placeholder="Freelancer / Trader"></textarea></div>
+                <div><label class="text-[10px] text-gray-500 font-bold uppercase">Language</label>
+                <select id="p-lang" class="w-full bg-white/5 border border-white/10 p-4 rounded-xl text-sm uppercase">
+                    <option value="EN">English</option><option value="BN">Bengali</option><option value="AR">Arabic</option>
+                </select></div>
+                <button onclick="core.saveProfile()" class="w-full py-5 btn-universal text-[10px] uppercase">Save Changes</button>
             </div>
         </div>
     </div>
 
-    <header id="app-header" class="hidden glass p-6 flex justify-between items-center sticky top-0 z-50">
+    <header id="app-header" class="glass p-6 flex justify-between items-center sticky top-0 z-50">
         <div class="flex flex-col">
-            <span id="w-type" class="text-[8px] font-black text-blue-500 uppercase tracking-widest">Base Node</span>
-            <span id="w-addr" class="text-[10px] font-bold text-gray-400">Not Connected</span>
+            <span id="header-name" class="text-xs font-black text-blue-500 uppercase">NEXIFY NODE</span>
+            <span id="header-addr" class="text-[9px] font-bold text-gray-600 italic">0x...</span>
         </div>
         <div class="flex items-center gap-4">
-            <div class="glass px-4 py-1.5 rounded-full text-[10px] font-bold text-blue-400 italic">💎 <span id="pts-count">14,200</span></div>
-            <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-600 to-purple-600 border border-white/20"></div>
+            <div class="glass px-4 py-1.5 rounded-full text-[10px] font-bold text-blue-400">💎 <span id="pts-val">0.0</span></div>
+            <button onclick="ui.toggleProfile(true)" class="w-10 h-10 rounded-full bg-blue-600 border border-white/20 flex items-center justify-center">⚙️</button>
         </div>
     </header>
 
-    <main id="app-main" class="hidden max-w-xl mx-auto px-6 pt-4">
+    <main id="app-main" class="max-w-xl mx-auto px-6 pt-4">
         
         <section id="page-hub" class="page page-active space-y-6">
-            <div class="card-grad p-10 rounded-[45px] text-center shadow-2xl relative overflow-hidden">
-                <div class="absolute top-0 right-0 p-6"><img src="https://cryptologos.cc/logos/base-base-logo.png" class="h-5"></div>
-                <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-2">Net Assets (Mining Active)</p>
-                <h1 class="text-6xl font-black tracking-tighter mb-8" id="balance-display">$0.00</h1>
+            <div class="glass p-10 rounded-[45px] text-center border-blue-500/20 shadow-2xl">
+                <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Portfolio Balance</p>
+                <h1 id="total-usd" class="text-6xl font-black tracking-tighter mb-8">$0.00</h1>
                 <div class="grid grid-cols-2 gap-4">
-                    <button onclick="engine.exec('Bridge')" class="bg-white text-black py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Bridge L2</button>
-                    <button onclick="engine.exec('Swap')" class="glass py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest">Swap 0x</button>
+                    <button onclick="engine.run('Bridging Assets')" class="bg-white text-black py-4 rounded-2xl text-[10px] font-black uppercase">Bridge</button>
+                    <button onclick="engine.run('Swapping 0x')" class="glass py-4 rounded-2xl text-[10px] font-black uppercase">Swap</button>
                 </div>
             </div>
 
             <div class="grid grid-cols-3 gap-3">
-                <div onclick="engine.exec('PayPal')" class="glass p-5 rounded-2xl flex items-center justify-center cursor-pointer">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="h-3">
-                </div>
-                <div onclick="engine.exec('Google Pay')" class="glass p-5 rounded-2xl flex items-center justify-center cursor-pointer">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/f/fa/Google_Pay_Logo.svg" class="h-3">
-                </div>
-                <div onclick="engine.exec('Gift Cards')" class="glass p-5 rounded-2xl flex items-center justify-center cursor-pointer text-[8px] font-black uppercase">Gift Cards</div>
+                <button onclick="engine.run('Linking PayPal')" class="glass p-5 rounded-2xl opacity-60 flex justify-center"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b5/PayPal.svg" class="h-3"></button>
+                <button onclick="engine.run('Linking Apple Pay')" class="glass p-5 rounded-2xl opacity-60 flex justify-center"><img src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Apple_Pay_logo.svg" class="h-3"></button>
+                <button onclick="engine.run('Generating Card')" class="glass p-5 rounded-2xl text-[8px] font-black uppercase">Gift Cards</button>
             </div>
 
-            <div class="glass p-8 rounded-[40px] border-blue-500/10">
-                <div class="flex justify-between items-center mb-6">
-                    <h3 class="text-xs font-black uppercase tracking-widest text-blue-500">Mining streak</h3>
-                    <span class="text-[9px] font-bold text-gray-500">24H CYCLE</span>
-                </div>
-                <button onclick="mining.checkIn()" id="mining-btn" class="w-full py-5 btn-master text-[10px] font-black uppercase tracking-[0.2em]">Daily Check-in (+500 PTS)</button>
-            </div>
-
-            <div class="glass p-8 rounded-[40px] border-white/5">
-                <h3 class="text-xs font-black uppercase tracking-widest mb-6">Social Pay @Username</h3>
-                <input type="text" id="target-id" placeholder="Recipient Handle" class="w-full bg-white/5 p-5 rounded-2xl mb-4 text-sm outline-none border border-white/10 focus:border-blue-600">
-                <button onclick="engine.exec('Social Payment')" class="w-full py-5 border-2 border-blue-600 rounded-2xl text-[10px] font-black uppercase text-blue-500 tracking-widest">Send Fund Instantly</button>
+            <div class="glass p-8 rounded-[40px] border-blue-500/10 text-center">
+                <h3 class="text-xs font-black uppercase tracking-widest text-blue-500 mb-4">Daily Check-in</h3>
+                <p class="text-[9px] text-gray-500 mb-6 font-bold uppercase">Earn 0.1 $NXF Point per day (Highly Limited)</p>
+                <button onclick="core.claim()" id="claim-btn" class="w-full py-5 btn-universal text-[10px] uppercase tracking-widest shadow-xl">Claim 0.1 Point</button>
             </div>
         </section>
 
         <section id="page-feed" class="page space-y-4">
             <div class="glass p-6 rounded-[35px] border-white/5">
-                <textarea id="post-input" placeholder="Broadcast to the network..." class="bg-transparent w-full text-sm outline-none resize-none h-12"></textarea>
-                <div class="flex justify-end mt-4"><button onclick="social.post()" class="btn-master px-8 py-2.5 text-[10px] uppercase">Post</button></div>
+                <textarea id="post-input" placeholder="Broadcast to Global Hub..." class="h-14"></textarea>
+                <div class="flex justify-end mt-4"><button onclick="social.post()" class="btn-universal px-8 py-3 text-[10px] uppercase">Post Feed</button></div>
             </div>
-            <div id="feed-container" class="space-y-4"></div>
+            <div id="feed-container" class="space-y-4 pb-20"></div>
         </section>
 
         <section id="page-manual" class="page space-y-6">
             <div class="glass p-8 rounded-[40px]">
-                <h3 class="text-xs font-black uppercase tracking-widest mb-6 text-blue-500">Invite Serial List</h3>
-                <div class="bg-white/5 p-5 rounded-2xl mb-6 flex justify-between items-center">
-                    <span class="text-[10px] font-bold text-gray-500">My Referral:</span>
-                    <span class="text-sm font-black text-blue-500 uppercase">BASE-7742-NXF</span>
-                </div>
-                <div class="space-y-3" id="invite-serial-list">
-                    <div class="flex justify-between text-[11px] p-4 glass rounded-2xl border-white/5"><span>1. @uk_freelancer</span><span class="text-blue-500">+500 PTS</span></div>
-                    <div class="flex justify-between text-[11px] p-4 glass rounded-2xl border-white/5"><span>2. @dubai_pilot</span><span class="text-blue-500">+500 PTS</span></div>
+                <h3 class="text-xs font-black uppercase tracking-widest mb-6 text-blue-500 text-center">Referral Serial List</h3>
+                <div id="ref-list" class="space-y-3">
+                    <p class="text-[10px] text-gray-700 font-bold uppercase text-center italic">Registering new nodes...</p>
                 </div>
             </div>
-
-            <div class="glass p-8 rounded-[40px] border-white/5 text-[11px] text-gray-500 font-bold uppercase space-y-4 leading-loose">
-                <p class="text-white">A-Z Manual & Rules:</p>
-                <p>• Smart Wallet: Auto-generated On-chain Identity.</p>
-                <p>• Mining: Points convert to $NXF Native Token on Base.</p>
-                <p>• Gateways: Support for PayPal, Apple Pay, and Cards.</p>
-                <p>• Fees: 0.1% Platform Fee on all Cross-chain Routes.</p>
+            <div class="glass p-8 rounded-[40px] text-[11px] text-gray-400 font-bold uppercase space-y-4 leading-relaxed">
+                <p class="text-white">A-Z System Protocol:</p>
+                <p>• Point Supply: Strictly limited to 0.1 per day.</p>
+                <p>• Social Pay: Use @username for zero-fee transfer.</p>
+                <p>• Multilingual: Global support for EN, BN, and AR.</p>
             </div>
         </section>
     </main>
 
-    <nav id="app-nav" class="hidden fixed bottom-0 inset-x-0 glass px-12 py-9 flex justify-between items-center z-50 rounded-t-[50px] bg-black/95 border-t border-white/5">
+    <nav class="fixed bottom-0 inset-x-0 glass px-12 py-9 flex justify-between items-center z-50 rounded-t-[50px] bg-black/90">
         <button onclick="ui.nav('hub')" id="n-hub" class="nav-active text-[10px] font-black uppercase tracking-widest">Hub</button>
         <button onclick="ui.nav('feed')" id="n-feed" class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Feed</button>
         <button onclick="ui.nav('manual')" id="n-manual" class="text-gray-500 text-[10px] font-black uppercase tracking-widest">Manual</button>
     </nav>
 
     <script>
-        // --- CORE DATABASE ---
         const firebaseConfig = { databaseURL: "https://nexify-ai-default-rtdb.firebaseio.com/" };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let userData = { pts: 14200, balance: 0.00 };
+        let session = { name: "User_Node", pts: 0.0, addr: "0x" + Math.random().toString(16).slice(2, 8).toUpperCase() };
 
-        // --- WALLET ENGINE ---
-        const wallet = {
-            init(mode) {
-                ui.loader(true, `Initializing ${mode} Engine...`);
-                setTimeout(() => {
-                    const addr = mode === 'Smart' ? "0xSMART_" + Math.random().toString(16).slice(2, 8).toUpperCase() : "0x7742...E921";
-                    document.getElementById('w-type').innerText = mode + " Node";
-                    document.getElementById('w-addr').innerText = addr;
-                    document.getElementById('screen-auth').style.display = 'none';
-                    document.getElementById('app-header').style.display = 'flex';
-                    document.getElementById('app-main').style.display = 'block';
-                    document.getElementById('app-nav').style.display = 'flex';
-                    ui.loader(false);
-                    social.load();
-                }, 2000);
+        const core = {
+            init() {
+                document.getElementById('header-addr').innerText = session.addr;
+                social.load();
+            },
+            saveProfile() {
+                const name = document.getElementById('p-name').value;
+                if(name) {
+                    session.name = name;
+                    document.getElementById('header-name').innerText = name.toUpperCase();
+                    ui.toggleProfile(false);
+                    alert("Profile updated successfully!");
+                }
+            },
+            claim() {
+                session.pts = parseFloat((session.pts + 0.1).toFixed(1));
+                document.getElementById('pts-val').innerText = session.pts;
+                document.getElementById('total-usd').innerText = "$" + (session.pts * 10).toFixed(2);
+                document.getElementById('claim-btn').disabled = true;
+                document.getElementById('claim-btn').innerText = "LIMIT REACHED";
             }
         };
 
-        // --- FINANCE ENGINE ---
         const engine = {
-            exec(type) {
-                ui.loader(true, `Verifying ${type} Protocol...`);
-                const steps = ["Securing Gateway...", "Checking Liquidity...", "Executing on Base L2...", "Success!"];
-                let i = 0;
-                const interval = setInterval(() => {
-                    document.getElementById('engine-status').innerText = steps[i]; i++;
-                    if(i === steps.length) {
-                        clearInterval(interval); ui.loader(false);
-                        alert(`${type} Action Completed via Universal Gateway.`);
-                    }
-                }, 1500);
+            run(type) {
+                ui.loader(true, type);
+                setTimeout(() => { ui.loader(false); alert(type + " executed on Base L2."); }, 2500);
             }
         };
 
-        // --- MINING SYSTEM ---
-        const mining = {
-            checkIn() {
-                userData.pts += 500;
-                document.getElementById('pts-count').innerText = userData.pts.toLocaleString();
-                document.getElementById('balance-display').innerText = "$" + (userData.pts / 10).toFixed(2);
-                alert("Mining Reward: +500 PTS Synchronized!");
-                document.getElementById('mining-btn').disabled = true;
-                document.getElementById('mining-btn').innerText = "Mining Streak Active";
+        const social = {
+            post() {
+                const txt = document.getElementById('post-input').value;
+                if(!txt) return;
+                db.ref('posts').push({ author: session.name, content: txt, time: Date.now() });
+                document.getElementById('post-input').value = "";
+            },
+            load() {
+                db.ref('posts').on('value', snap => {
+                    const cont = document.getElementById('feed-container');
+                    cont.innerHTML = "";
+                    snap.forEach(c => {
+                        cont.innerHTML += `
+                            <div class="glass p-6 rounded-[35px] border-white/5">
+                                <p class="text-[9px] font-black text-blue-500 uppercase mb-2">@${c.val().author}</p>
+                                <p class="text-sm text-gray-300 leading-relaxed">${c.val().content}</p>
+                                <div class="flex gap-6 mt-4 text-[9px] font-black text-gray-600">
+                                    <button onclick="alert('Liked!')">❤️ LIKE</button>
+                                    <button onclick="alert('Alpha Shared!')">🔄 SHARE</button>
+                                </div>
+                            </div>`;
+                    });
+                });
             }
         };
 
-        // --- UI & SOCIAL ---
         const ui = {
             nav(tab) {
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
@@ -197,30 +189,14 @@
                     document.getElementById('n-' + t).className = (t === tab) ? "nav-active text-[10px] font-black uppercase tracking-widest" : "text-gray-500 text-[10px] font-black uppercase tracking-widest";
                 });
             },
-            loader(show, text = "") {
-                const l = document.getElementById('engine-overlay');
-                l.style.display = show ? 'flex' : 'none';
-                document.getElementById('engine-status').innerText = text;
+            toggleProfile(show) { document.getElementById('profile-modal').style.display = show ? 'block' : 'none'; },
+            loader(show, text) {
+                document.getElementById('loader').style.display = show ? 'flex' : 'none';
+                document.getElementById('loader-title').innerText = text;
             }
         };
 
-        const social = {
-            post() {
-                const val = document.getElementById('post-input').value;
-                if(!val) return;
-                db.ref('posts').push({ text: val, time: Date.now() });
-                document.getElementById('post-input').value = "";
-            },
-            load() {
-                db.ref('posts').limitToLast(10).on('value', snap => {
-                    const cont = document.getElementById('feed-container');
-                    cont.innerHTML = "";
-                    snap.forEach(c => {
-                        cont.innerHTML += `<div class="glass p-6 rounded-[35px] border-white/5"><p class="text-sm text-gray-300 leading-relaxed">${c.val().text}</p></div>`;
-                    });
-                });
-            }
-        };
+        core.init();
     </script>
 </body>
 </html>
