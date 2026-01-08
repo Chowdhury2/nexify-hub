@@ -3,209 +3,180 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nexify | Unified Decentralized OS</title>
+    <title>Nexify | Sovereign Base OS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-analytics-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
-        :root { --main: #0052ff; --bg: #000; --accent: #00ff88; }
-        body { background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; }
-        .glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(50px); border: 1px solid rgba(255,255,255,0.08); }
-        .page { display: none; height: calc(100vh - 110px); overflow-y: auto; padding-bottom: 120px; scrollbar-width: none; }
-        .page-active { display: block; animation: zoomIn 0.3s ease-out; }
-        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .btn-master { background: var(--main); border-radius: 20px; font-weight: 800; transition: 0.3s; box-shadow: 0 10px 30px -10px var(--main); }
-        input, select, textarea { background: #0d0e12; border: 1px solid #1e232d; border-radius: 18px; padding: 16px; color: white; width: 100%; outline: none; }
-        .nav-active { color: var(--main); transform: scale(1.2); opacity: 1 !important; }
-        #game-canvas { background: radial-gradient(circle, #111, #000); border-radius: 30px; cursor: crosshair; }
+        :root { --base: #0052ff; --bg: #000; }
+        body { background: var(--bg); color: #fff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto; overflow: hidden; height: 100vh; }
+        .glass { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); }
+        .page { display: none; height: calc(100vh - 90px); overflow-y: scroll; -webkit-overflow-scrolling: touch; }
+        .page-active { display: block; animation: fadeIn 0.2s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .btn-smart { background: var(--base); border-radius: 12px; font-weight: 700; transition: 0.2s; border: none; cursor: pointer; }
+        .nav-item { opacity: 0.4; flex: 1; text-align: center; padding: 15px 0; font-size: 20px; }
+        .nav-active { opacity: 1; color: var(--base); border-top: 3px solid var(--base); }
+        input, select { background: #111; border: 1px solid #222; border-radius: 12px; padding: 12px; color: #fff; width: 100%; }
+        /* Optimized for Slow Net */
+        img { content-visibility: auto; }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen" class="fixed inset-0 z-[6000] bg-black flex flex-col items-center justify-center p-10 text-center">
-        <h1 class="text-7xl font-black text-blue-500 italic mb-2 tracking-tighter">NEXIFY</h1>
-        <p class="text-[9px] text-gray-500 mb-12 uppercase tracking-[0.5em] font-black">Universal Web3 Ecosystem</p>
-        <div class="w-full max-w-sm space-y-4">
-            <button onclick="auth.social()" class="w-full py-5 glass flex items-center justify-center gap-4 text-[11px] font-black uppercase tracking-widest rounded-[25px]">
-                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Google (Smart Wallet)
+    <div id="auth-screen" class="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center p-8">
+        <div class="w-16 h-16 bg-blue-600 rounded-2xl mb-6 shadow-2xl shadow-blue-500/20"></div>
+        <h1 class="text-4xl font-black italic tracking-tighter mb-2">NEXIFY</h1>
+        <p class="text-gray-500 text-[10px] uppercase tracking-widest mb-12">Universal Web3 Protocol</p>
+        
+        <div class="w-full max-w-xs space-y-3">
+            <button onclick="auth.social()" class="w-full py-4 glass rounded-xl flex items-center justify-center gap-3 text-xs font-bold uppercase">
+                Google / Twitter Sign-in
             </button>
-            <button onclick="wallet.connectManual()" class="w-full py-5 btn-master text-[11px] font-black uppercase tracking-widest">Connect Bitget / MetaMask</button>
+            <button onclick="auth.web3()" class="w-full py-4 btn-smart text-xs uppercase">Connect Wallet</button>
         </div>
     </div>
 
     <div id="app-content" class="hidden">
-        <header class="p-6 flex justify-between items-center bg-black/90 backdrop-blur-3xl sticky top-0 z-50 border-b border-white/5">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center font-black text-[10px]">NX</div>
-                <div><h2 id="u-name" class="text-[10px] font-black uppercase">@USER</h2><p class="text-[7px] text-green-500 font-bold uppercase">Cloud Node: 10GB ACTIVE</p></div>
+        <header class="p-4 flex justify-between items-center bg-black/80 sticky top-0 z-50">
+            <div class="flex items-center gap-2">
+                <div id="u-pfp" class="w-8 h-8 rounded-full bg-blue-600 flex items-center justify-center text-[10px] font-bold">NX</div>
+                <span id="u-name" class="text-[11px] font-bold">@USER</span>
             </div>
-            <div class="glass px-5 py-2.5 rounded-full text-[12px] font-black text-blue-400">💎 <span id="pts-display">0.00</span></div>
+            <div class="flex items-center gap-2">
+                <span id="pts-display" class="text-blue-500 font-bold">0.00</span>
+                <span class="text-[10px] bg-white/10 px-2 py-1 rounded">💎</span>
+            </div>
         </header>
 
-        <main class="max-w-xl mx-auto px-5 pt-4">
-            <section id="p-wallet" class="page page-active space-y-6">
-                <div class="glass p-10 rounded-[45px] text-center">
-                    <p class="text-[10px] uppercase font-black text-gray-500 mb-2">Total Unified Balance</p>
-                    <h1 id="usd-display" class="text-7xl font-black tracking-tighter mb-8">$0.00</h1>
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="ui.modal('giftcard-modal', true)" class="bg-white text-black py-4 rounded-2xl text-[9px] font-black uppercase">Swap Gift Cards</button>
-                        <button onclick="ui.modal('transfer-modal', true)" class="bg-blue-600 py-4 rounded-2xl text-[9px] font-black uppercase">Send by Handle</button>
+        <main>
+            <section id="p-assets" class="page page-active p-4">
+                <div class="glass p-8 rounded-[30px] mb-6 text-center">
+                    <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Unified Balance</p>
+                    <h1 id="usd-display" class="text-5xl font-black mb-6">$0.00</h1>
+                    <div class="flex gap-2">
+                        <button onclick="ui.modal('tx-modal', true)" class="flex-1 py-3 btn-smart text-[10px] uppercase">Instant Send</button>
+                        <button onclick="ui.modal('gift-modal', true)" class="flex-1 py-3 glass rounded-xl text-[10px] uppercase">Gift Bridge</button>
                     </div>
                 </div>
-                <div class="glass p-8 rounded-[40px] flex justify-between items-center border-blue-500/20 bg-blue-500/5">
-                    <div><p class="text-[10px] font-black uppercase text-blue-400">Cloud Mining Node</p><p class="text-[8px] text-gray-500 uppercase">Profit: 0.1 NX/hr</p></div>
-                    <button onclick="core.claim()" class="px-6 py-3 btn-master text-[9px] font-black uppercase">Sync</button>
+
+                <div class="space-y-3">
+                    <div class="glass p-4 rounded-2xl flex justify-between items-center">
+                        <div><p class="text-[10px] font-bold">Cloud Node Mining (10GB)</p><p class="text-[8px] text-green-500">Live: 0.05 NX/hr</p></div>
+                        <button onclick="core.claim()" class="text-[10px] font-bold text-blue-500">CLAIM</button>
+                    </div>
                 </div>
             </section>
 
-            <section id="p-dapp" class="page space-y-4">
-                <div class="flex gap-2"><input type="text" id="dapp-url" placeholder="https://uniswap.org"><button onclick="core.openDApp()" class="px-5 btn-master font-black">GO</button></div>
-                <iframe id="dapp-frame" class="w-full h-[500px] rounded-[30px] hidden glass"></iframe>
-            </section>
-
-            <section id="p-gig" class="page space-y-4">
-                <div class="glass p-8 rounded-[40px] mb-4">
-                    <input type="text" id="gig-title" placeholder="Gig Title..." class="mb-3">
-                    <input type="number" id="gig-price" placeholder="Price ($)" class="mb-3">
-                    <button onclick="core.postGig()" class="w-full py-4 btn-master text-[10px] uppercase">Post Gig</button>
+            <section id="p-feed" class="page p-4">
+                <div class="glass p-4 rounded-2xl mb-4">
+                    <textarea id="post-input" class="w-full bg-transparent border-none text-sm outline-none resize-none" placeholder="What's happening?"></textarea>
+                    <div class="flex justify-end mt-2"><button onclick="core.cast()" class="px-5 py-2 btn-smart text-[10px]">CAST</button></div>
                 </div>
-                <div id="gig-container" class="space-y-4 pb-20"></div>
+                <div id="feed-container" class="space-y-4"></div>
             </section>
 
-            <section id="p-game" class="page text-center">
-                <canvas id="game-canvas" width="340" height="400" class="mx-auto rounded-[30px] shadow-2xl"></canvas>
-                <button onclick="game.start()" class="mt-6 px-12 py-4 btn-master text-[11px] uppercase">Play Bubble Earn</button>
+            <section id="p-gigs" class="page p-4">
+                <div id="gig-list" class="space-y-4"></div>
             </section>
 
-            <section id="p-social" class="page"><div id="feed-container" class="space-y-6 pb-20"></div></section>
+            <section id="p-settings" class="page p-4">
+                <div class="glass p-6 rounded-2xl mb-4 space-y-4">
+                    <p class="text-xs font-bold text-blue-500 uppercase">Connect & Earn (0.1 NX)</p>
+                    <button onclick="core.link('X')" class="w-full py-3 glass rounded-xl text-[10px] flex justify-between px-4 items-center">Connect Twitter <span>+0.1 NX</span></button>
+                    <button onclick="core.link('TG')" class="w-full py-3 glass rounded-xl text-[10px] flex justify-between px-4 items-center">Connect Telegram <span>+0.1 NX</span></button>
+                </div>
+                <div class="glass p-6 rounded-2xl space-y-4">
+                    <p class="text-xs font-bold uppercase">Security</p>
+                    <div class="flex justify-between text-xs"><span>Biometric Authentication</span> <input type="checkbox" checked class="w-4"></div>
+                    <button onclick="auth.out()" class="w-full py-3 text-red-500 text-xs font-bold">Sign Out</button>
+                </div>
+            </section>
         </main>
 
-        <nav class="fixed bottom-0 inset-x-0 glass px-8 py-10 flex justify-between items-center z-50 rounded-t-[50px] bg-black/95">
-            <button onclick="ui.nav('wallet')" class="nav-item nav-active text-[22px]">🏦</button>
-            <button onclick="ui.nav('dapp')" class="nav-item opacity-40 text-[22px]">🌐</button>
-            <button onclick="ui.nav('gig')" class="nav-item opacity-40 text-[22px]">💼</button>
-            <button onclick="ui.nav('game')" class="nav-item opacity-40 text-[22px]">🎮</button>
-            <button onclick="ui.nav('social')" class="nav-item opacity-40 text-[22px]">🎬</button>
+        <nav class="fixed bottom-0 inset-x-0 glass bg-black/95 flex justify-around items-center z-[100] border-t border-white/5">
+            <button onclick="ui.nav('assets')" class="nav-item nav-active">🏦</button>
+            <button onclick="ui.nav('feed')" class="nav-item">💬</button>
+            <button onclick="ui.nav('gigs')" class="nav-item">💼</button>
+            <button onclick="ui.nav('settings')" class="nav-item">⚙️</button>
         </nav>
     </div>
 
-    <div id="giftcard-modal" class="fixed inset-0 z-[7000] bg-black/95 hidden flex items-center justify-center p-10">
-        <div class="w-full max-w-sm glass p-10 rounded-[45px] space-y-6">
-            <h3 class="text-xs font-black uppercase text-center text-amber-500">Gift Card Bridge</h3>
-            <select><option>Amazon Card</option><option>Steam Card</option></select>
-            <input type="text" placeholder="Card Code">
-            <button onclick="alert('Card Verified! USD Balance Synced.'); ui.modal('giftcard-modal', false)" class="w-full py-5 btn-master text-[10px] uppercase">Swap to Crypto</button>
+    <div id="tx-modal" class="fixed inset-0 z-[10000] bg-black/95 hidden flex items-center justify-center p-8">
+        <div class="w-full max-w-xs glass p-8 rounded-3xl space-y-4">
+            <h3 class="text-center font-bold">Transfer Fund</h3>
+            <input type="text" placeholder="Username / Address">
+            <input type="number" placeholder="Amount ($)">
+            <p class="text-[8px] text-center text-gray-500">Protocol Fee: 1% (Founder Profit)</p>
+            <button onclick="ui.modal('tx-modal', false)" class="w-full py-4 btn-smart text-xs">Send Instantly</button>
         </div>
     </div>
 
     <script>
-        // Updated Firebase Config
-        const firebaseConfig = {
-            apiKey: "AIzaSyBdiU4hxYXMPdvuYeWm21oMLoyoT9X14eM",
-            authDomain: "nexify-ai-a1caa.firebaseapp.com",
-            projectId: "nexify-ai-a1caa",
-            storageBucket: "nexify-ai-a1caa.firebasestorage.app",
-            messagingSenderId: "46706090864",
-            appId: "1:46706090864:web:451271fda84fbd938de5b5",
-            measurementId: "G-VVQ7FVWXRJ"
-        };
-        
+        const firebaseConfig = { apiKey: "AIzaSyBdiU4hxYXMPdvuYeWm21oMLoyoT9X14eM", authDomain: "nexify-ai-a1caa.firebaseapp.com", projectId: "nexify-ai-a1caa", storageBucket: "nexify-ai-a1caa.firebasestorage.app", messagingSenderId: "46706090864", appId: "1:46706090864:web:451271fda84fbd938de5b5" };
         firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
-        const authRef = firebase.auth();
-        const analytics = firebase.analytics();
+        const authRef = firebase.auth(); const db = firebase.firestore();
 
-        const wallet = {
-            async connectManual() {
-                if(window.ethereum) {
-                    const acc = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    this.initApp({ email: 'Web3User', uid: acc[0] });
-                }
-            },
-            initApp(user) {
+        const auth = {
+            social() { authRef.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res => this.init(res.user)); },
+            web3() { this.init({displayName: 'BaseUser', uid: '0xWeb3'}); },
+            init(user) {
                 document.getElementById('auth-screen').style.display = 'none';
                 document.getElementById('app-content').classList.remove('hidden');
-                core.init(user);
-            }
+                core.sync(user);
+            },
+            out() { authRef.signOut().then(() => location.reload()); }
         };
 
-        const auth = { async social() { const res = await authRef.signInWithPopup(new firebase.auth.GoogleAuthProvider()); wallet.initApp(res.user); } };
-
         const core = {
-            init(user) {
+            sync(user) {
                 db.collection('users').doc(user.uid).onSnapshot(doc => {
-                    if(!doc.exists) db.collection('users').doc(user.uid).set({ name: user.email.split('@')[0], pts: 10.0 });
-                    else {
-                        const d = doc.data();
-                        document.getElementById('u-name').innerText = "@"+d.name.toUpperCase();
-                        document.getElementById('pts-display').innerText = d.pts.toFixed(2);
-                        document.getElementById('usd-display').innerText = "$"+(d.pts*1).toFixed(2);
-                    }
+                    if(!doc.exists) db.collection('users').doc(user.uid).set({ name: user.displayName, pts: 0.1 });
+                    const d = doc.data();
+                    document.getElementById('u-name').innerText = "@" + d.name.split(' ')[0].toUpperCase();
+                    document.getElementById('pts-display').innerText = d.pts.toFixed(2);
+                    document.getElementById('usd-display').innerText = "$" + d.pts.toFixed(2);
                 });
-                this.loadGigs(); this.loadFeed();
+                this.loadFeed(); this.loadGigs();
             },
-            claim() { db.collection('users').doc(authRef.currentUser.uid).update({ pts: firebase.firestore.FieldValue.increment(0.1) }); },
-            postGig() {
-                const t = document.getElementById('gig-title').value; const p = document.getElementById('gig-price').value;
-                if(t && p) db.collection('gigs').add({ name: document.getElementById('u-name').innerText, title: t, price: p, time: Date.now() });
+            claim() { db.collection('users').doc(authRef.currentUser.uid).update({ pts: firebase.firestore.FieldValue.increment(0.01) }); },
+            link(p) { this.claim(); alert(p + " Linked! +0.1 NX Reward."); },
+            cast() {
+                const text = document.getElementById('post-input').value;
+                if(text) db.collection('posts').add({ text, user: document.getElementById('u-name').innerText, time: Date.now() });
+            },
+            loadFeed() {
+                db.collection('posts').orderBy('time', 'desc').onSnapshot(snap => {
+                    const cont = document.getElementById('feed-container'); cont.innerHTML = '';
+                    snap.forEach(doc => { const p = doc.data();
+                        cont.innerHTML += `<div class="glass p-4 rounded-2xl"><p class="text-[10px] font-bold text-blue-500">${p.user}</p><p class="text-sm mt-1">${p.text}</p></div>`;
+                    });
+                });
             },
             loadGigs() {
                 db.collection('gigs').onSnapshot(snap => {
-                    const cont = document.getElementById('gig-container'); cont.innerHTML = '';
+                    const cont = document.getElementById('gig-list'); cont.innerHTML = '';
                     snap.forEach(doc => { const g = doc.data();
-                        cont.innerHTML += `<div class="glass p-7 rounded-[40px] flex justify-between items-center">
-                            <div><p class="text-[9px] font-black text-blue-500 uppercase">${g.name}</p><p class="text-sm font-bold">${g.title}</p></div>
-                            <button class="px-6 py-3 bg-white text-black text-[9px] font-black rounded-xl">$${g.price} HIRE</button>
-                        </div>`;
+                        cont.innerHTML += `<div class="glass p-4 rounded-2xl flex justify-between items-center"><div><p class="text-sm font-bold">${g.title}</p><p class="text-[9px] text-gray-500">$${g.price}</p></div><button class="px-4 py-2 btn-smart text-[10px]">HIRE</button></div>`;
                     });
                 });
-            },
-            loadFeed() {
-                db.collection('posts').onSnapshot(snap => {
-                    const cont = document.getElementById('feed-container'); cont.innerHTML = '';
-                    snap.forEach(doc => { const p = doc.data();
-                        cont.innerHTML += `<div class="glass p-8 rounded-[45px] shadow-2xl">
-                            <div class="flex justify-between mb-4"><span class="text-[10px] font-black text-blue-500 uppercase tracking-widest">${p.name}</span><span class="bg-amber-500/10 text-amber-500 text-[8px] font-black px-2 py-1 rounded">MONETIZED</span></div>
-                            <p class="text-gray-200 mb-6">${p.text}</p>
-                            <div class="flex justify-between items-center pt-4 border-t border-white/5">
-                                <span class="text-[9px] text-gray-600 font-black">👁️ ${p.views} VIEWS</span><button class="text-blue-500 text-[9px] font-black uppercase">Support</button>
-                            </div>
-                        </div>`;
-                    });
-                });
-            },
-            openDApp() { document.getElementById('dapp-frame').src = document.getElementById('dapp-url').value; document.getElementById('dapp-frame').classList.remove('hidden'); }
-        };
-
-        const game = {
-            canvas: document.getElementById('game-canvas'), ctx: document.getElementById('game-canvas').getContext('2d'),
-            bubbles: [], score: 0,
-            start() { this.score = 0; setInterval(() => { this.bubbles.push({ x: Math.random()*300+20, y: 420, r: 25, s: 2.5 }); }, 1000); this.animate(); this.canvas.onclick = (e) => this.pop(e); },
-            animate() {
-                this.ctx.clearRect(0,0,340,400);
-                this.bubbles.forEach(b => { b.y -= b.s; this.ctx.beginPath(); this.ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); this.ctx.fillStyle = 'rgba(0,82,255,0.4)'; this.ctx.fill(); });
-                requestAnimationFrame(() => this.animate());
-            },
-            pop(e) {
-                const rect = this.canvas.getBoundingClientRect(); const mx = e.clientX-rect.left; const my = e.clientY-rect.top;
-                this.bubbles.forEach((b, i) => { if(Math.hypot(b.x-mx, b.y-my) < b.r) { this.bubbles.splice(i, 1); this.score++; if(this.score%5===0) core.claim(); } });
             }
         };
 
         const ui = {
-            nav(tab) {
+            nav(id) {
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
-                document.getElementById('p-' + tab).classList.add('page-active');
-                ['wallet', 'dapp', 'gig', 'game', 'social'].forEach((t, i) => document.querySelectorAll('nav button')[i].classList.toggle('nav-active', t === tab));
+                document.getElementById('p-'+id).classList.add('page-active');
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('nav-active'));
+                event.currentTarget.classList.add('nav-active');
             },
             modal(id, show) { document.getElementById(id).style.display = show ? 'flex' : 'none'; }
         };
+
+        authRef.onAuthStateChanged(u => { if(u) auth.init(u); });
     </script>
 </body>
 </html>
