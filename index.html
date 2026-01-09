@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXIFY OS | The Absolute Master Build</title>
+    <title>NEXIFY | The Living Sovereign OS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -15,160 +15,173 @@
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap');
         :root { --accent: #0052ff; --bg: #000; --glass: rgba(255,255,255,0.04); }
         body { background: var(--bg); color: #fff; font-family: 'Plus Jakarta Sans', sans-serif; overflow: hidden; height: 100vh; }
-        
-        /* Premium UI Effects */
-        .glass { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); border-radius: 30px; }
-        .page { display: none; height: 100vh; overflow-y: auto; padding: 100px 20px 150px 20px; transition: 0.3s; }
-        .active { display: block; animation: zoomIn 0.4s ease; }
-        @keyframes zoomIn { from { opacity:0; transform: scale(0.95); } to { opacity:1; transform: scale(1); } }
-        
-        .btn-action { background: var(--accent); border-radius: 20px; font-weight: 800; box-shadow: 0 10px 40px rgba(0, 82, 255, 0.3); }
-        .nav-dock { position: fixed; bottom: 25px; left: 20px; right: 20px; height: 85px; background: rgba(10,10,10,0.9); backdrop-filter: blur(25px); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; items-center; z-index: 10000; }
-        .nav-item { color: #555; font-size: 22px; transition: 0.3s; position: relative; }
-        .nav-item.active-nav { color: var(--accent); transform: translateY(-5px); }
-        
-        /* Card Layout */
-        .nexify-card { background: linear-gradient(135deg, #0052ff 0%, #000 100%); border-radius: 25px; border: 1px solid rgba(255,255,255,0.1); }
+
+        /* Ultra-Pro UI Components */
+        .glass-panel { background: var(--glass); backdrop-filter: blur(40px); border: 1px solid rgba(255,255,255,0.08); border-radius: 35px; }
+        .page { display: none; height: 100vh; overflow-y: auto; padding: 100px 20px 140px 20px; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+        .active { display: block; animation: zoomIn 0.5s ease; }
+        @keyframes zoomIn { from { opacity:0; transform: scale(0.97) translateY(10px); } to { opacity:1; transform: scale(1) translateY(0); } }
+
+        /* Sidebar Drawer (Three-Dot Menu) */
+        #side-drawer { position: fixed; inset: 0; background: rgba(0,0,0,0.98); z-index: 10000; transform: translateX(100%); transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1); }
+        .drawer-open { transform: translateX(0) !important; }
+
+        /* Navigation Style */
+        .nav-dock { position: fixed; bottom: 30px; left: 20px; right: 20px; height: 85px; background: rgba(10,10,10,0.9); backdrop-filter: blur(25px); border-radius: 40px; border: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-around; align-items: center; z-index: 5000; }
+        .nav-btn { color: #555; font-size: 20px; transition: 0.3s; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .nav-btn.active-nav { color: var(--accent); transform: translateY(-5px); }
+        .nav-btn span { font-size: 7px; font-weight: 800; text-transform: uppercase; }
+
+        /* Living Card */
+        .master-card { background: linear-gradient(135deg, #0052ff 0%, #000 150%); border-radius: 28px; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 20px 50px rgba(0, 82, 255, 0.2); }
     </style>
 </head>
 <body>
 
     <div id="loader" class="fixed inset-0 bg-black z-[20000] flex flex-col items-center justify-center hidden">
         <div class="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-6"></div>
-        <h2 class="text-xs font-black uppercase tracking-[0.3em]">Processing on Base...</h2>
+        <h2 class="text-xs font-black uppercase tracking-[0.3em]">Synching with Base Mainnet...</h2>
     </div>
 
-    <header class="fixed top-0 inset-x-0 p-6 z-[5000] flex justify-between items-center bg-black/50 backdrop-blur-2xl border-b border-white/5">
+    <div id="side-drawer" class="p-10 flex flex-col justify-between">
+        <div class="space-y-10">
+            <div class="flex justify-between items-center">
+                <h3 class="text-2xl font-black italic">SYSTEM OPS</h3>
+                <button onclick="ui.menu()" class="w-12 h-12 glass-panel flex items-center justify-center text-3xl">&times;</button>
+            </div>
+            <nav class="space-y-8 text-sm font-bold uppercase tracking-widest text-gray-400">
+                <div class="flex items-center gap-5 text-white"><i class="fa-solid fa-shield-virus text-blue-500 text-xl"></i> Biometric Vault</div>
+                <div class="flex items-center gap-5"><i class="fa-solid fa-server"></i> Node Management</div>
+                <div class="flex items-center gap-5"><i class="fa-solid fa-palette"></i> OS Customization</div>
+                <div class="flex items-center gap-5"><i class="fa-solid fa-headset"></i> Sovereign Support</div>
+            </nav>
+        </div>
+        <button onclick="location.reload()" class="text-red-500 font-black uppercase text-xs tracking-widest pb-10">Terminate Current Session</button>
+    </div>
+
+    <header class="fixed top-0 inset-x-0 p-6 z-[4000] flex justify-between items-center bg-black/50 backdrop-blur-2xl border-b border-white/5">
         <div class="flex items-center gap-4" onclick="ui.nav('profile')">
             <div class="w-11 h-11 rounded-2xl bg-blue-600 p-0.5"><img id="u-avatar" src="" class="w-full h-full rounded-[14px] bg-black"></div>
             <div>
                 <p id="u-name" class="text-[10px] font-black uppercase tracking-widest text-white">@USER</p>
-                <p class="text-[7px] text-green-500 font-bold uppercase tracking-tighter">● 10GB Node Synchronized</p>
+                <div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span><span class="text-[7px] text-gray-400 font-bold uppercase">10GB NODE ACTIVE</span></div>
             </div>
         </div>
-        <div class="glass px-5 py-2.5 border-blue-500/20 text-sm font-black tracking-tighter flex items-center gap-2">
-            <i class="fa-solid fa-gem text-blue-500 text-xs"></i> $<span id="bal-display">0.00</span>
+        <div class="flex items-center gap-4">
+            <div class="glass-panel px-4 py-2 border-blue-500/20 text-sm font-black tracking-tighter flex items-center gap-2">
+                <i class="fa-solid fa-gem text-blue-500 text-xs"></i> $<span id="bal-display">0.00</span>
+            </div>
+            <button onclick="ui.menu()" class="text-2xl text-gray-400"><i class="fa-solid fa-ellipsis-vertical"></i></button>
         </div>
     </header>
 
     <main>
         <section id="p-hub" class="page active space-y-6">
-            <div class="glass p-10 text-center relative overflow-hidden">
-                <p class="text-[9px] text-gray-500 font-black uppercase mb-2">Portfolio Value</p>
-                <h1 class="text-6xl font-black tracking-tighter mb-10">$<span id="bal-main">0.00</span></h1>
+            <div class="glass-panel p-12 text-center relative overflow-hidden">
+                <div class="absolute -top-10 -right-10 w-40 h-40 bg-blue-600/10 blur-[80px]"></div>
+                <p class="text-[9px] text-gray-500 font-black uppercase mb-2 tracking-[0.3em]">Unified Sovereign Assets</p>
+                <h1 class="text-7xl font-black tracking-tighter mb-10">$<span id="bal-main">0.00</span></h1>
                 <div class="flex gap-4">
-                    <button onclick="ui.nav('trade')" class="flex-1 py-5 btn-action text-[10px] uppercase">Swap & Bridge</button>
-                    <button onclick="ui.nav('vault')" class="flex-1 py-5 glass text-[10px] uppercase font-black">Vault</button>
+                    <button onclick="ui.nav('swap')" class="flex-1 py-5 btn-action text-[10px] uppercase tracking-widest shadow-xl">Execute Trade</button>
+                    <button onclick="ui.nav('bank')" class="flex-1 py-5 glass-panel text-[10px] uppercase font-black tracking-widest">Bank Center</button>
                 </div>
             </div>
 
-            <div class="glass p-6 flex justify-between items-center border-purple-500/20" onclick="alert('AI: Market is Bullish. Recommended: Hold NX.')">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 rounded-2xl bg-purple-600/10 flex items-center justify-center text-purple-500 text-xl"><i class="fa-solid fa-brain"></i></div>
-                    <div><h3 class="text-[10px] font-black uppercase">Nexify AI Assistant</h3><p class="text-[7px] text-gray-500 font-bold uppercase">Ready for Finance Analysis</p></div>
+            <div class="glass-panel p-6 flex justify-between items-center group cursor-pointer border-purple-500/20" onclick="alert('AI Agent: High liquidity detected on Base Chain. Founder Fee generated today: $420.00')">
+                <div class="flex items-center gap-5">
+                    <div class="w-14 h-14 rounded-2xl bg-purple-600/10 flex items-center justify-center text-purple-500 text-2xl shadow-inner"><i class="fa-solid fa-brain"></i></div>
+                    <div><h3 class="text-[10px] font-black uppercase text-white">Nexify AI Agent</h3><p class="text-[7px] text-gray-500 font-bold uppercase mt-1">Status: Analyzing Market Ecosystem...</p></div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-gray-800"></i>
+                <i class="fa-solid fa-chevron-right text-gray-800 group-hover:text-purple-500 transition-all"></i>
             </div>
 
-            <div class="glass p-8 space-y-4">
-                <p class="text-[10px] text-gray-500 font-black uppercase tracking-widest text-center">Social Send (@username)</p>
-                <div class="flex gap-3">
-                    <input type="text" id="target-user" placeholder="@handle" class="w-full bg-black/60 border border-white/5 p-5 rounded-2xl text-xs outline-none focus:border-blue-500">
-                    <button onclick="core.transact('Send')" class="px-8 btn-action"><i class="fa-solid fa-paper-plane"></i></button>
+            <div class="glass-panel p-8 space-y-5">
+                <div class="flex justify-between items-center"><p class="text-[10px] text-gray-500 font-black uppercase tracking-widest">Instant Pay (@Handle)</p><i class="fa-solid fa-bolt text-yellow-500 text-[10px]"></i></div>
+                <div class="flex gap-4">
+                    <input type="text" id="target-user" placeholder="Enter social id..." class="w-full bg-black/60 border border-white/5 p-5 rounded-2xl text-xs outline-none focus:border-blue-500 transition-all">
+                    <button onclick="core.transact('Transfer')" class="px-8 btn-action"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
-                <p class="text-[6px] text-center text-gray-600 font-black uppercase tracking-[0.2em]">1% Founder Fee Applied to all Transfers</p>
+                <div class="flex justify-between text-[6px] font-black uppercase text-gray-600 tracking-widest"><span>Founder Fee: 1%</span><span>Network: Base OS</span></div>
             </div>
         </section>
 
-        <section id="p-trade" class="page space-y-6">
-            <h2 class="text-xl font-black italic">Trade Engine</h2>
-            <div class="glass p-6 space-y-4">
-                <div class="bg-black/40 p-5 rounded-2xl border border-white/5">
-                    <label class="text-[8px] text-gray-500 font-black uppercase">From (Network/Asset)</label>
-                    <div class="flex justify-between items-center mt-2">
-                        <input type="number" value="100" class="bg-transparent text-2xl font-black outline-none w-1/2">
-                        <span class="font-black text-blue-500">USDT</span>
-                    </div>
-                </div>
-                <div class="flex justify-center -my-8 z-10"><button class="w-12 h-12 bg-blue-600 rounded-full border-8 border-black shadow-lg"><i class="fa-solid fa-repeat"></i></button></div>
-                <div class="bg-black/40 p-5 rounded-2xl border border-white/5">
-                    <label class="text-[8px] text-gray-500 font-black uppercase">To (Sovereign NX)</label>
-                    <div class="flex justify-between items-center mt-2">
-                        <input type="number" value="99" class="bg-transparent text-2xl font-black outline-none w-1/2" readonly>
-                        <span class="font-black text-white">NX</span>
-                    </div>
-                </div>
-                <button onclick="core.transact('Swap')" class="w-full py-5 btn-action text-xs uppercase tracking-widest">Execute Swap</button>
+        <section id="p-bank" class="page space-y-8">
+            <h2 class="text-xl font-black italic">Bank & Freelance</h2>
+            <div class="master-card p-10 aspect-[1.6/1] flex flex-col justify-between relative overflow-hidden">
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-600/20 blur-[80px]"></div>
+                <div class="flex justify-between items-start"><i class="fa-solid fa-microchip text-4xl text-yellow-600"></i><p class="text-[8px] font-black opacity-30 tracking-[0.5em]">SOVEREIGN MASTER</p></div>
+                <p class="text-3xl tracking-[0.4em] font-mono opacity-90">**** **** **** 8820</p>
+                <div class="flex justify-between items-end"><p id="card-holder" class="text-[10px] font-black uppercase tracking-widest">USER NAME</p><i class="fa-brands fa-cc-mastercard text-4xl opacity-20"></i></div>
             </div>
-        </section>
 
-        <section id="p-earn" class="page space-y-6">
-            <div class="glass p-12 text-center">
-                <div class="w-24 h-24 bg-blue-600/10 rounded-full mx-auto flex items-center justify-center mb-6 animate-pulse">
-                    <i class="fa-solid fa-atom text-5xl text-blue-500"></i>
-                </div>
-                <h2 class="text-xl font-black uppercase tracking-widest">10GB Cloud Node</h2>
-                <div class="w-full bg-white/5 h-2 rounded-full my-8"><div id="mining-bar" class="bg-blue-600 h-2 rounded-full w-0 transition-all duration-[3000ms]"></div></div>
-                <button onclick="core.mine()" class="w-full py-5 btn-action text-[10px] uppercase tracking-widest">Sync Rewards</button>
-            </div>
-            
-            <div class="glass p-6 flex justify-between items-center" onclick="alert('Bubble Pop Loading...')">
-                <div class="flex items-center gap-4"><i class="fa-solid fa-gamepad text-blue-500"></i> <span class="text-xs font-black uppercase">Play & Earn (Bubble Pop)</span></div>
-                <i class="fa-solid fa-play text-[8px] text-gray-500"></i>
-            </div>
-        </section>
-
-        <section id="p-gigs" class="page space-y-6">
-            <div class="flex justify-between items-center">
-                <h2 class="text-xl font-black italic">Freelance Hub</h2>
-                <button class="px-4 py-2 glass text-[8px] font-black uppercase">+ Post Job</button>
-            </div>
-            <div id="gig-list" class="space-y-4">
-                <div class="glass p-6 flex justify-between items-center">
-                    <div><h4 class="font-bold text-sm">Web3 Smart Contract Audit</h4><p class="text-[9px] text-blue-400 font-black uppercase mt-1">$2,500 Reward</p></div>
-                    <button class="px-5 py-2 btn-action text-[8px] uppercase">Apply</button>
-                </div>
-                <div class="glass p-6 flex justify-between items-center">
-                    <div><h4 class="font-bold text-sm">Graphic Design for Nexify Card</h4><p class="text-[9px] text-blue-400 font-black uppercase mt-1">$450 Reward</p></div>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center"><h4 class="text-[10px] font-black uppercase text-blue-500">Available Gigs</h4><button class="text-[8px] font-black uppercase">+ Post Job</button></div>
+                <div class="glass-panel p-6 flex justify-between items-center">
+                    <div><h5 class="text-xs font-bold uppercase">Base Chain Integration</h5><p class="text-[8px] text-green-500 font-black mt-1">$1,200 REWARD</p></div>
                     <button class="px-5 py-2 btn-action text-[8px] uppercase">Apply</button>
                 </div>
             </div>
         </section>
 
-        <section id="p-me" class="page space-y-8">
+        <section id="p-swap" class="page space-y-6">
+            <h2 class="text-xl font-black italic">Sovereign Swap</h2>
+            <div class="glass-panel p-8 space-y-6">
+                <div class="bg-black/50 p-6 rounded-3xl border border-white/5">
+                    <label class="text-[8px] text-gray-500 font-black uppercase">You Swap (External Asset)</label>
+                    <div class="flex justify-between items-center mt-3"><input type="number" value="100" class="bg-transparent text-3xl font-black outline-none w-1/2"><span class="font-black text-blue-500">USDT</span></div>
+                </div>
+                <div class="flex justify-center -my-10 z-10"><button class="w-14 h-14 bg-blue-600 rounded-full border-[10px] border-black"><i class="fa-solid fa-repeat"></i></button></div>
+                <div class="bg-black/50 p-6 rounded-3xl border border-white/5">
+                    <label class="text-[8px] text-gray-500 font-black uppercase">You Receive (Native NX)</label>
+                    <div class="flex justify-between items-center mt-3"><input type="number" value="99" class="bg-transparent text-3xl font-black outline-none w-1/2" readonly><span class="font-black text-white">NX</span></div>
+                </div>
+                <button onclick="core.transact('Swap')" class="w-full py-6 btn-action text-xs uppercase tracking-widest">Verify & Execute</button>
+            </div>
+        </section>
+
+        <section id="p-profile" class="page space-y-8">
             <div class="text-center">
-                <img id="p-avatar" src="" class="w-24 h-24 rounded-[35px] mx-auto border-4 border-blue-600 shadow-2xl mb-4">
-                <h2 id="p-name" class="text-3xl font-black uppercase tracking-tighter">Sovereign User</h2>
-                <button class="text-[9px] text-blue-500 font-black uppercase mt-2">Edit Identity</button>
-            </div>
-
-            <div class="nexify-card p-8 aspect-[1.6/1] flex flex-col justify-between">
-                <div class="flex justify-between items-start"><i class="fa-solid fa-wifi rotate-90 text-2xl opacity-50"></i> <p class="text-[8px] font-black opacity-30 tracking-[0.5em]">NEXIFY BLACK</p></div>
-                <p class="text-2xl tracking-[0.4em] font-mono opacity-80">**** **** **** 8820</p>
-                <div class="flex justify-between items-end">
-                    <div><p class="text-[7px] uppercase opacity-50">Card Holder</p><p id="card-name" class="text-[10px] font-black uppercase">USER NAME</p></div>
-                    <i class="fa-brands fa-cc-mastercard text-4xl opacity-20"></i>
+                <div class="relative inline-block">
+                    <img id="p-avatar" src="" class="w-28 h-28 rounded-[40px] mx-auto border-4 border-blue-600 shadow-2xl">
+                    <button class="absolute bottom-2 right-0 bg-blue-600 p-3 rounded-2xl border-4 border-black text-xs"><i class="fa-solid fa-pen-nib"></i></button>
                 </div>
+                <h2 id="p-full-name" class="text-3xl font-black uppercase tracking-tighter mt-6">Sovereign User</h2>
+                <p id="p-social-id" class="text-[10px] text-blue-500 font-bold uppercase tracking-[0.3em] mt-2">Alpha ID Linked</p>
             </div>
 
-            <div class="glass p-8 space-y-6">
-                <p class="text-[10px] font-black uppercase text-blue-500 tracking-widest">Connected Socials</p>
-                <div class="flex justify-between items-center"><span class="text-xs font-bold uppercase"><i class="fa-brands fa-x-twitter mr-3"></i> Twitter (X)</span> <button class="text-blue-500 text-[10px] font-black uppercase">Connect</button></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-bold uppercase"><i class="fa-brands fa-discord mr-3 text-purple-500"></i> Discord</span> <button class="text-purple-500 text-[10px] font-black uppercase">Connect</button></div>
-                <div class="flex justify-between items-center"><span class="text-xs font-bold uppercase"><i class="fa-brands fa-telegram mr-3 text-blue-400"></i> Telegram</span> <button class="text-blue-400 text-[10px] font-black uppercase text-green-500">Linked ✓</button></div>
+            <div class="glass-panel p-8 space-y-6">
+                <p class="text-[10px] font-black uppercase text-gray-500 text-center">Identity Accounts</p>
+                <div class="flex justify-between items-center p-4 bg-black/40 rounded-2xl"><div class="flex items-center gap-4"><i class="fa-brands fa-twitter text-blue-400"></i><span class="text-[10px] font-bold">X / TWITTER</span></div><span class="text-[8px] text-blue-500 font-black">LINKED ✓</span></div>
+                <div class="flex justify-between items-center p-4 bg-black/40 rounded-2xl"><div class="flex items-center gap-4"><i class="fa-brands fa-discord text-purple-500"></i><span class="text-[10px] font-bold">DISCORD APP</span></div><button class="text-[8px] font-black uppercase">Connect</button></div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="alert('Biometric Auth Synced')" class="glass-panel py-6 text-[8px] font-black uppercase"><i class="fa-solid fa-fingerprint mb-2 block text-xl"></i> Biometrics</button>
+                <button onclick="ui.nav('earn')" class="glass-panel py-6 text-[8px] font-black uppercase"><i class="fa-solid fa-bolt mb-2 block text-xl"></i> Sync Node</button>
+            </div>
+        </section>
+
+        <section id="p-earn" class="page space-y-8">
+            <div class="glass-panel p-16 text-center">
+                <div class="w-32 h-32 bg-blue-600/10 rounded-full mx-auto flex items-center justify-center mb-8 animate-pulse shadow-inner"><i class="fa-solid fa-atom text-6xl text-blue-500"></i></div>
+                <h2 class="text-2xl font-black uppercase tracking-widest">10GB Cloud Node</h2>
+                <p class="text-[8px] text-gray-600 font-bold uppercase mt-2 mb-10">Powering Nexify Decentralized OS</p>
+                <div class="w-full bg-white/5 h-2.5 rounded-full mb-10 overflow-hidden"><div id="mining-bar" class="bg-blue-600 h-full w-0 transition-all duration-[4000ms]"></div></div>
+                <button onclick="core.mine()" class="w-full py-6 btn-action text-[10px] uppercase tracking-widest">Collect Energy Reward</button>
             </div>
         </section>
     </main>
 
     <nav class="nav-dock">
-        <button onclick="ui.nav('hub')" class="nav-item active-nav"><i class="fa-solid fa-house"></i></button>
-        <button onclick="ui.nav('trade')" class="nav-item"><i class="fa-solid fa-shuffle"></i></button>
-        <button onclick="ui.nav('earn')" class="nav-item"><i class="fa-solid fa-bolt"></i></button>
-        <button onclick="ui.nav('gigs')" class="nav-item"><i class="fa-solid fa-briefcase"></i></button>
-        <button onclick="ui.nav('me')" class="nav-item"><i class="fa-solid fa-user-ninja"></i></button>
+        <button onclick="ui.nav('hub')" class="nav-btn active-nav"><i class="fa-solid fa-house"></i><span>Hub</span></button>
+        <button onclick="ui.nav('bank')" class="nav-btn"><i class="fa-solid fa-wallet"></i><span>Bank</span></button>
+        <button onclick="ui.nav('swap')" class="nav-btn"><i class="fa-solid fa-shuffle"></i><span>Swap</span></button>
+        <button onclick="ui.nav('earn')" class="nav-btn"><i class="fa-solid fa-bolt"></i><span>Earn</span></button>
+        <button onclick="ui.nav('profile')" class="nav-btn"><i class="fa-solid fa-user-astronaut"></i><span>Profile</span></button>
     </nav>
 
     <script>
+        // ENTERPRISE CONFIGURATION
         const firebaseConfig = { apiKey: "AIzaSyBdiU4hxYXMPdvuYeWm21oMLoyoT9X14eM", authDomain: "nexify-ai-a1caa.firebaseapp.com", projectId: "nexify-ai-a1caa", storageBucket: "nexify-ai-a1caa.firebasestorage.app", messagingSenderId: "46706090864", appId: "1:46706090864:web:451271fda84fbd938de5b5" };
         firebase.initializeApp(firebaseConfig);
         const authRef = firebase.auth(); const db = firebase.firestore();
@@ -176,12 +189,12 @@
         const core = {
             sync(user) {
                 db.collection('users').doc(user.uid).onSnapshot(doc => {
-                    const d = doc.data() || { name: user.displayName, pts: 100.00, username: 'user_'+user.uid.slice(0,4) };
+                    const d = doc.data() || { name: user.displayName, pts: 1000.00, username: 'sov_'+user.uid.slice(0,5) };
                     document.getElementById('u-name').innerText = "@" + d.username.toUpperCase();
-                    document.getElementById('p-name').innerText = d.name;
-                    document.getElementById('card-name').innerText = d.name.toUpperCase();
-                    document.getElementById('bal-display').innerText = d.pts.toFixed(2);
-                    document.getElementById('bal-main').innerText = d.pts.toFixed(2);
+                    document.getElementById('p-full-name').innerText = d.name;
+                    document.getElementById('card-holder').innerText = d.name.toUpperCase();
+                    document.getElementById('bal-display').innerText = d.pts.toLocaleString('en-US', {minimumFractionDigits: 2});
+                    document.getElementById('bal-main').innerText = d.pts.toLocaleString('en-US', {minimumFractionDigits: 2});
                     document.getElementById('u-avatar').src = user.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user.uid}`;
                     document.getElementById('p-avatar').src = document.getElementById('u-avatar').src;
                 });
@@ -189,18 +202,18 @@
             transact(type) {
                 document.getElementById('loader').classList.remove('hidden');
                 setTimeout(() => {
-                    db.collection('users').doc(authRef.currentUser.uid).update({ pts: firebase.firestore.FieldValue.increment(-5.00) });
+                    db.collection('users').doc(authRef.currentUser.uid).update({ pts: firebase.firestore.FieldValue.increment(-10.00) });
                     document.getElementById('loader').classList.add('hidden');
-                    alert(`${type} Successful. 1% Founder Fee Processed.`);
-                }, 2000);
+                    alert(`SYSTEM: ${type} successful on Base Network. Founder Fee (1%) routed to your wallet.`);
+                }, 2500);
             },
             mine() {
                 const bar = document.getElementById('mining-bar'); bar.style.width = '100%';
                 setTimeout(() => {
-                    db.collection('users').doc(authRef.currentUser.uid).update({ pts: firebase.firestore.FieldValue.increment(0.10) });
+                    db.collection('users').doc(authRef.currentUser.uid).update({ pts: firebase.firestore.FieldValue.increment(1.50) });
                     bar.style.width = '0%';
-                    alert("Mining Reward Claimed!");
-                }, 3000);
+                    alert("Node Sync: Energy converted to NX Rewards!");
+                }, 4000);
             }
         };
 
@@ -208,9 +221,10 @@
             nav(id) {
                 document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
                 document.getElementById('p-'+id).classList.add('active');
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
+                document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active-nav'));
                 event.currentTarget.classList.add('active-nav');
-            }
+            },
+            menu() { document.getElementById('side-drawer').classList.toggle('drawer-open'); }
         };
 
         authRef.onAuthStateChanged(u => { if(u) core.sync(u); else authRef.signInAnonymously(); });
