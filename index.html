@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>NEXIFY | Universal Unified OS</title>
+    <title>Nexify | Sovereign Ultra-OS</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -12,205 +12,222 @@
     <script src="https://www.gstatic.com/firebasejs/9.15.0/firebase-firestore-compat.js"></script>
 
     <style>
-        :root { --coinbase-blue: #0052ff; --base-bg: #000000; --glass: rgba(255,255,255,0.04); }
-        body { background: var(--base-bg); color: #fff; font-family: 'Inter', sans-serif; overflow: hidden; height: 100vh; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;400;700;800&display=swap');
         
-        /* UI Components */
-        .glass-card { background: var(--glass); backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); border-radius: 32px; }
-        .page { display: none; height: 100vh; overflow-y: auto; padding: 100px 20px 140px 20px; }
-        .active { display: block; animation: smoothIn 0.5s ease-out; }
-        @keyframes smoothIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        
-        /* Coinbase Style Buttons */
-        .btn-primary { background: var(--coinbase-blue); border-radius: 16px; font-weight: 700; transition: 0.3s; }
-        .btn-primary:active { transform: scale(0.95); }
-        
-        /* Card UI */
-        .nexify-card { background: linear-gradient(135deg, #111 0%, #0052ff 300%); border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; }
-        
-        /* Bottom Nav Grid (15 features need scannability) */
-        .nav-grid { background: rgba(0,0,0,0.9); border-top: 1px solid rgba(255,255,255,0.05); }
-        .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; color: #666; font-size: 8px; font-weight: 800; text-transform: uppercase; }
-        .nav-item.active-nav { color: var(--coinbase-blue); }
+        :root { 
+            --accent: #0052ff; 
+            --bg: #000000; 
+            --card-grad: linear-gradient(145deg, #0a0a0a, #111111);
+            --glow: rgba(0, 82, 255, 0.15);
+        }
+
+        body { 
+            background-color: var(--bg); 
+            color: #fff; 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            overflow: hidden; 
+            height: 100vh;
+            user-select: none;
+        }
+
+        /* World Class Glass & Shadow */
+        .ultra-glass {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(40px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 35px;
+        }
+
+        .neo-card {
+            background: var(--card-grad);
+            border: 1px solid rgba(255,255,255,0.05);
+            box-shadow: 20px 20px 60px #000000, -5px -5px 20px rgba(255,255,255,0.02);
+            border-radius: 35px;
+        }
+
+        /* Smooth Transitions */
+        .page { display: none; height: 100vh; overflow-y: auto; padding: 110px 24px 160px 24px; scroll-behavior: smooth; }
+        .page-active { display: block; animation: pageReveal 0.6s cubic-bezier(0.23, 1, 0.32, 1); }
+        @keyframes pageReveal { from { opacity: 0; transform: translateY(30px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* Dynamic Glow Buttons */
+        .btn-glow {
+            background: var(--accent);
+            box-shadow: 0 10px 40px var(--glow);
+            border-radius: 22px;
+            font-weight: 800;
+            transition: all 0.3s;
+        }
+        .btn-glow:active { transform: scale(0.92); filter: brightness(1.3); }
+
+        /* Animated Profile Ring */
+        .profile-ring {
+            padding: 3px;
+            background: linear-gradient(45deg, var(--accent), #00ffcc);
+            border-radius: 20px;
+            animation: rotateGlow 4s linear infinite;
+        }
+        @keyframes rotateGlow { 0% { filter: hue-rotate(0deg); } 100% { filter: hue-rotate(360deg); } }
+
+        /* Bottom Nav - Apple Style Floating */
+        .floating-nav {
+            position: fixed; bottom: 30px; left: 24px; right: 24px;
+            height: 85px; background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(30px); border-radius: 35px;
+            border: 1px solid rgba(255,255,255,0.08);
+            z-index: 1000; display: flex; justify-content: space-around; align-items: center;
+        }
+        .nav-link { color: #555; transition: 0.4s; font-size: 20px; position: relative; }
+        .nav-link.active-link { color: var(--accent); transform: translateY(-5px); }
+        .nav-link.active-link::after { 
+            content: ''; position: absolute; bottom: -12px; left: 50%; transform: translateX(-50%);
+            width: 5px; height: 5px; background: var(--accent); border-radius: 50%; box-shadow: 0 0 10px var(--accent);
+        }
+
+        /* Drawer Overlay */
+        #menu-drawer {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 2000;
+            transform: translateX(100%); transition: 0.5s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .drawer-open { transform: translateX(0) !important; }
     </style>
 </head>
 <body>
 
-    <div id="auth-screen" class="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center p-10 text-center">
-        <div class="w-24 h-24 bg-blue-600 rounded-[35px] mb-8 flex items-center justify-center shadow-2xl shadow-blue-500/20">
-            <i class="fa-solid fa-vortex text-4xl text-white"></i>
+    <div id="menu-drawer" class="p-10">
+        <div class="flex justify-between items-center mb-16">
+            <h2 class="text-3xl font-black italic">SYSTEM</h2>
+            <button onclick="ui.menu()" class="w-12 h-12 ultra-glass flex items-center justify-center text-2xl">&times;</button>
         </div>
-        <h1 class="text-6xl font-black italic tracking-tighter mb-2">NEXIFY</h1>
-        <p class="text-gray-500 text-[10px] uppercase tracking-[0.5em] mb-12">Universal Sovereign OS</p>
-        
-        <div class="w-full max-w-xs space-y-4">
-            <button onclick="auth.login()" class="w-full py-5 glass-card flex items-center justify-center gap-4 text-xs font-bold uppercase tracking-widest">
-                <i class="fa-brands fa-google text-lg"></i> Link Identity
-            </button>
-            <button onclick="auth.web3()" class="w-full py-5 btn-primary text-xs font-bold uppercase tracking-widest">Connect Smart Wallet</button>
+        <div class="space-y-10 text-xl font-bold">
+            <div class="flex items-center gap-6"><i class="fa-solid fa-gear text-blue-500"></i> Settings</div>
+            <div class="flex items-center gap-6"><i class="fa-solid fa-shield-halved text-green-500"></i> Security Vault</div>
+            <div class="flex items-center gap-6"><i class="fa-solid fa-circle-info text-gray-500"></i> Nexify Support</div>
+            <div onclick="location.reload()" class="text-red-500 flex items-center gap-6 pt-10"><i class="fa-solid fa-power-off"></i> Logout OS</div>
         </div>
     </div>
 
-    <div id="app-main" class="hidden">
-        
-        <header class="fixed top-0 inset-x-0 p-6 z-[100] flex justify-between items-center bg-black/60 backdrop-blur-md">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-blue-600 flex items-center justify-center shadow-lg"><i class="fa-solid fa-user-shield"></i></div>
-                <div>
-                    <h2 id="u-name" class="text-[10px] font-black uppercase tracking-widest">@USER</h2>
-                    <p class="text-[7px] text-green-500 font-bold uppercase tracking-tighter animate-pulse">● 10GB Node Synchronized</p>
-                </div>
+    <header class="fixed top-0 inset-x-0 p-6 z-[1000] flex justify-between items-center bg-black/30 backdrop-blur-xl border-b border-white/5">
+        <div class="flex items-center gap-4" onclick="ui.nav('profile')">
+            <div class="profile-ring">
+                <img id="u-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Nexify" class="w-11 h-11 rounded-[17px] bg-black">
             </div>
-            <div class="glass-card px-5 py-2 border-blue-500/30 flex items-center gap-2">
-                <i class="fa-solid fa-gem text-blue-400 text-xs"></i>
+            <div>
+                <h2 id="u-name" class="text-[10px] font-black uppercase tracking-[0.3em]">@LOADING</h2>
+                <div class="flex items-center gap-1.5"><span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span><span class="text-[7px] font-bold text-gray-400 uppercase">10GB Node Active</span></div>
+            </div>
+        </div>
+        <div class="flex items-center gap-4">
+            <div class="ultra-glass px-5 py-2.5 flex items-center gap-2 border-blue-500/20">
+                <i class="fa-solid fa-gem text-blue-500 text-xs"></i>
                 <span id="pts-display" class="text-sm font-black tracking-tighter">0.00</span>
             </div>
-        </header>
+            <button onclick="ui.menu()" class="text-2xl text-gray-500"><i class="fa-solid fa-bars-staggered"></i></button>
+        </div>
+    </header>
 
-        <main>
-            <section id="p-hub" class="page active space-y-6">
-                <div class="glass-card p-10 text-center">
-                    <p class="text-[9px] text-gray-500 font-black uppercase mb-1">Total Unified Assets</p>
-                    <h1 id="usd-display" class="text-6xl font-black tracking-tighter mb-8">$0.00</h1>
-                    <div class="flex gap-3">
-                        <button onclick="ui.nav('cards')" class="flex-1 py-4 btn-primary text-[10px] uppercase font-black">My Cards</button>
-                        <button onclick="ui.modal('bridge')" class="flex-1 py-4 glass-card text-[10px] uppercase font-black">Bridge</button>
-                    </div>
+    <main>
+        <section id="p-hub" class="page page-active space-y-8">
+            <div class="neo-card p-12 text-center relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-4"><i class="fa-solid fa-chart-line text-blue-500/20 text-4xl"></i></div>
+                <p class="text-[9px] text-gray-500 font-black uppercase tracking-[0.4em] mb-4">Unified Portfolio</p>
+                <h1 id="usd-display" class="text-7xl font-black tracking-tighter mb-10">$0.00</h1>
+                <div class="flex gap-4">
+                    <button onclick="alert('Bridge Initializing...')" class="flex-1 py-5 btn-glow text-[10px] uppercase tracking-[0.2em]">Bridge</button>
+                    <button onclick="ui.nav('cards')" class="flex-1 py-5 ultra-glass text-[10px] uppercase font-black tracking-[0.2em]">Bank</button>
                 </div>
+            </div>
 
-                <div class="glass-card p-6 flex items-center gap-5 border-purple-500/20" onclick="ui.modal('ai')">
-                    <div class="w-12 h-12 rounded-full bg-purple-600/20 flex items-center justify-center text-purple-400 text-xl"><i class="fa-solid fa-brain"></i></div>
-                    <div><h3 class="text-xs font-black uppercase">Nexify AI Agent</h3><p class="text-[8px] text-gray-500 font-bold uppercase">Ready for Market Analysis</p></div>
+            <div class="ultra-glass p-8 flex justify-between items-center group cursor-pointer">
+                <div class="flex items-center gap-6">
+                    <div class="w-16 h-16 rounded-[24px] bg-blue-600/10 flex items-center justify-center text-blue-500 text-2xl shadow-inner"><i class="fa-solid fa-brain"></i></div>
+                    <div><h3 class="text-sm font-black uppercase tracking-widest">Nexify AI</h3><p class="text-[8px] text-gray-500 font-bold uppercase mt-1">Analyzing Base Chain Liquidity...</p></div>
                 </div>
+                <i class="fa-solid fa-arrow-right-long text-gray-700 group-hover:text-blue-500 transition-all"></i>
+            </div>
 
-                <div class="glass-card p-8 space-y-4">
-                    <p class="text-[10px] text-gray-500 font-black uppercase">Send by Username (@)</p>
-                    <div class="flex gap-2">
-                        <input type="text" id="target-id" placeholder="@handle" class="bg-black/40 border border-white/5 p-4 rounded-2xl text-xs w-full">
-                        <button onclick="core.send()" class="px-6 btn-primary"><i class="fa-solid fa-paper-plane"></i></button>
-                    </div>
+            <div class="neo-card p-10 space-y-6">
+                <div class="flex justify-between items-center"><p class="text-[10px] font-black uppercase text-gray-500 tracking-widest">Instant Pay (@)</p><i class="fa-solid fa-bolt text-yellow-500 text-[10px]"></i></div>
+                <div class="flex gap-4">
+                    <input type="text" id="target-id" placeholder="Social handle..." class="bg-black/80 border border-white/5 p-5 rounded-2xl text-sm w-full outline-none focus:border-blue-500/40">
+                    <button onclick="core.send()" class="px-8 btn-glow"><i class="fa-solid fa-paper-plane"></i></button>
                 </div>
-            </section>
+            </div>
+        </section>
 
-            <section id="p-cards" class="page space-y-6">
-                <div class="nexify-card p-8 aspect-[1.6/1] flex flex-col justify-between">
-                    <div class="flex justify-between items-start"><i class="fa-solid fa-microchip text-3xl text-yellow-600"></i><p class="italic font-black text-xs opacity-40">SOVEREIGN CARD</p></div>
-                    <p class="text-xl tracking-[0.3em] font-mono">**** **** **** 0088</p>
-                    <div class="flex justify-between"><p id="card-name" class="text-[10px] font-bold uppercase">USERNAME</p><i class="fa-brands fa-cc-mastercard text-3xl opacity-20"></i></div>
-                </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <div class="glass-card p-5"><p class="text-[8px] text-gray-500 uppercase">Debit Card</p><p class="text-xs font-bold">LINKED</p></div>
-                    <div class="glass-card p-5"><p class="text-[8px] text-gray-500 uppercase">Credit Card</p><p class="text-xs font-bold">ACTIVE</p></div>
-                </div>
-            </section>
+        <section id="p-cards" class="page space-y-8">
+            <div class="neo-card p-8 aspect-[1.6/1] flex flex-col justify-between border-blue-500/10 relative overflow-hidden">
+                <div class="absolute -bottom-10 -left-10 w-40 h-40 bg-blue-600/10 blur-[80px]"></div>
+                <div class="flex justify-between items-start"><i class="fa-solid fa-microchip text-4xl text-yellow-600/50"></i><p class="font-black italic text-[8px] tracking-[0.5em] text-gray-700">SOVEREIGN</p></div>
+                <p class="text-2xl tracking-[0.4em] font-mono opacity-80">**** **** **** 8820</p>
+                <div class="flex justify-between items-end"><p id="card-holder" class="text-[10px] font-black uppercase tracking-widest">USER NAME</p><i class="fa-brands fa-cc-mastercard text-4xl opacity-10"></i></div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+                <div class="ultra-glass p-8 text-center"><p class="text-[8px] text-gray-500 uppercase mb-2">Debit</p><p class="text-xs font-black">CONNECTED</p></div>
+                <div class="ultra-glass p-8 text-center"><p class="text-[8px] text-gray-500 uppercase mb-2">Credit</p><p class="text-xs font-black">SYNCED</p></div>
+            </div>
+        </section>
 
-            <section id="p-social" class="page space-y-4">
-                <div class="glass-card p-5">
-                    <textarea id="cast-box" placeholder="What's happening in the OS?" class="bg-transparent border-none text-sm w-full h-20 outline-none"></textarea>
-                    <div class="flex justify-end"><button onclick="core.cast()" class="px-8 py-2 btn-primary text-[9px] uppercase font-black">Cast</button></div>
-                </div>
-                <div id="feed-container" class="space-y-4"></div>
-            </section>
+        <section id="p-profile" class="page space-y-8">
+            <div class="text-center pt-8">
+                <div class="profile-ring inline-block p-1 mb-6"><img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Nexify" class="w-28 h-28 rounded-[30px] bg-black"></div>
+                <h2 id="p-full-name" class="text-3xl font-black uppercase tracking-tighter">Sovereign User</h2>
+                <p class="text-[10px] text-blue-500 font-bold uppercase tracking-[0.4em] mt-2">Alpha Level Identity</p>
+            </div>
+            <div class="ultra-glass p-10 space-y-8">
+                <div class="flex justify-between items-center text-xs"><span>Linked Socials</span><span class="text-blue-400 font-black">X, DISCORD</span></div>
+                <hr class="border-white/5">
+                <div class="flex justify-between items-center text-xs"><span>Base Address</span><span class="text-gray-500 italic">0x4F...8B2D</span></div>
+            </div>
+        </section>
 
-            <section id="p-earn" class="page space-y-6 text-center">
-                <div class="glass-card p-12">
-                    <i class="fa-solid fa-microchip text-5xl text-blue-500 mb-6 animate-pulse"></i>
-                    <h2 class="text-xl font-black uppercase">10GB Cloud Node</h2>
-                    <div class="w-full bg-white/5 h-2 rounded-full my-8"><div class="bg-blue-600 h-2 rounded-full w-2/3"></div></div>
-                    <button onclick="core.claim()" class="w-full py-4 btn-primary text-[10px] font-black uppercase">Claim Reward</button>
-                </div>
-                <div class="glass-card p-6 flex justify-between items-center" onclick="alert('Launching Bubble Pop...')">
-                    <p class="text-xs font-black uppercase">Bubble Pop Game</p>
-                    <i class="fa-solid fa-gamepad text-blue-500"></i>
-                </div>
-            </section>
+        <section id="p-earn" class="page space-y-8">
+            <div class="neo-card p-14 text-center">
+                <div class="relative inline-block"><i class="fa-solid fa-atom text-6xl text-blue-500 mb-8 animate-spin-slow"></i></div>
+                <h2 class="text-2xl font-black uppercase tracking-widest">10GB NODE</h2>
+                <p class="text-[9px] text-gray-600 font-black uppercase tracking-[0.3em] my-6">Decentralized Power Sharing</p>
+                <button onclick="core.claim()" class="w-full py-5 btn-glow text-[10px] uppercase tracking-widest">Sync Rewards</button>
+            </div>
+        </section>
+    </main>
 
-            <section id="p-vault" class="page space-y-6">
-                <div class="glass-card p-8 space-y-6">
-                    <h3 class="text-xs font-black uppercase text-blue-500 tracking-widest">Vault Security</h3>
-                    <div class="flex justify-between"><span>Biometric Auth</span><input type="checkbox" checked></div>
-                    <hr class="border-white/5">
-                    <p class="text-[8px] text-gray-500 uppercase font-black tracking-widest">Link Accounts (+0.1 NX)</p>
-                    <button onclick="core.reward(0.1)" class="w-full py-4 glass-card text-[10px] font-bold text-left px-6"><i class="fa-brands fa-x-twitter mr-3"></i> Twitter / X</button>
-                    <button onclick="location.reload()" class="w-full py-4 text-red-500 font-bold text-[10px] uppercase mt-10">Logout OS</button>
-                </div>
-            </section>
-        </main>
-
-        <nav class="nav-grid fixed bottom-0 inset-x-0 h-28 flex justify-around items-center px-6 z-[100] rounded-t-[40px]">
-            <button onclick="ui.nav('hub')" class="nav-item active-nav"><i class="fa-solid fa-house-chimney text-xl"></i><span>Hub</span></button>
-            <button onclick="ui.nav('cards')" class="nav-item"><i class="fa-solid fa-credit-card text-xl"></i><span>Bank</span></button>
-            <button onclick="ui.nav('social')" class="nav-item"><i class="fa-solid fa-earth-americas text-xl"></i><span>Feed</span></button>
-            <button onclick="ui.nav('earn')" class="nav-item"><i class="fa-solid fa-bolt text-xl"></i><span>Earn</span></button>
-            <button onclick="ui.nav('vault')" class="nav-item"><i class="fa-solid fa-shield-virus text-xl"></i><span>Vault</span></button>
-        </nav>
-    </div>
+    <nav class="floating-nav">
+        <button onclick="ui.nav('hub')" class="nav-link active-link"><i class="fa-solid fa-house-user"></i></button>
+        <button onclick="ui.nav('cards')" class="nav-link"><i class="fa-solid fa-wallet"></i></button>
+        <button onclick="ui.nav('earn')" class="nav-link"><i class="fa-solid fa-bolt"></i></button>
+        <button onclick="ui.nav('feed')" class="nav-link"><i class="fa-solid fa-earth-americas"></i></button>
+        <button onclick="ui.nav('profile')" class="nav-link"><i class="fa-solid fa-user-astronaut"></i></button>
+    </nav>
 
     <script>
-        // CONFIG & FIREBASE
         const firebaseConfig = { apiKey: "AIzaSyBdiU4hxYXMPdvuYeWm21oMLoyoT9X14eM", authDomain: "nexify-ai-a1caa.firebaseapp.com", projectId: "nexify-ai-a1caa", storageBucket: "nexify-ai-a1caa.firebasestorage.app", messagingSenderId: "46706090864", appId: "1:46706090864:web:451271fda84fbd938de5b5" };
         firebase.initializeApp(firebaseConfig);
         const authRef = firebase.auth(); const db = firebase.firestore();
 
         const auth = {
-            login() { authRef.signInWithPopup(new firebase.auth.GoogleAuthProvider()).then(res => this.init(res.user)); },
-            web3() { this.init({displayName: 'Sovereign_User', uid: '0xW3'}); },
-            init(user) {
-                document.getElementById('auth-screen').style.display = 'none';
-                document.getElementById('app-main').classList.remove('hidden');
-                core.sync(user);
-            }
-        };
-
-        const core = {
             sync(user) {
                 db.collection('users').doc(user.uid).onSnapshot(doc => {
-                    if(!doc.exists) db.collection('users').doc(user.uid).set({ name: user.displayName, pts: 0.1, username: user.displayName.split(' ')[0].toLowerCase() });
-                    const d = doc.data();
+                    const d = doc.data() || { name: user.displayName, pts: 0.1, username: user.displayName.split(' ')[0].toLowerCase() };
                     document.getElementById('u-name').innerText = "@" + d.username.toUpperCase();
-                    document.getElementById('card-name').innerText = d.name.toUpperCase();
+                    document.getElementById('p-full-name').innerText = d.name;
+                    document.getElementById('card-holder').innerText = d.name.toUpperCase();
                     document.getElementById('pts-display').innerText = d.pts.toFixed(2);
                     document.getElementById('usd-display').innerText = "$" + d.pts.toFixed(2);
-                });
-                this.loadFeed();
-            },
-            send() {
-                const target = document.getElementById('target-id').value;
-                if(target) alert("Sending Funds to " + target + ". Founder Fee (1%) Applied.");
-            },
-            reward(v) { db.collection('users').doc(authRef.currentUser.uid).update({ pts: firebase.firestore.FieldValue.increment(v) }); },
-            claim() { this.reward(0.01); alert("Node Reward Synced!"); },
-            cast() {
-                const text = document.getElementById('cast-box').value;
-                if(text) {
-                    db.collection('posts').add({ t: text, u: document.getElementById('u-name').innerText, time: Date.now() });
-                    document.getElementById('cast-box').value = '';
-                }
-            },
-            loadFeed() {
-                db.collection('posts').orderBy('time', 'desc').onSnapshot(snap => {
-                    const c = document.getElementById('feed-container'); c.innerHTML = '';
-                    snap.forEach(doc => { const p = doc.data();
-                        c.innerHTML += `<div class="glass-card p-6 shadow-2xl"><p class="text-[9px] font-black text-blue-500 uppercase">${p.u}</p><p class="text-sm mt-3 text-gray-300">${p.t}</p></div>`;
-                    });
                 });
             }
         };
 
         const ui = {
             nav(id) {
-                document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-                document.getElementById('p-'+id).classList.add('active');
-                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
-                event.currentTarget.classList.add('active-nav');
+                document.querySelectorAll('.page').forEach(p => p.classList.remove('page-active'));
+                document.getElementById('p-'+id).classList.add('page-active');
+                document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active-link'));
+                event.currentTarget.classList.add('active-link');
             },
-            modal(type) {
-                if(type === 'bridge') alert("Bridge Activated: Swap Gift Cards to NX. (1% Fee)");
-                if(type === 'ai') alert("Nexify AI Agent: Market Analysis 100% Ready.");
-            }
+            menu() { document.getElementById('menu-drawer').classList.toggle('drawer-open'); }
         };
 
-        authRef.onAuthStateChanged(u => { if(u) auth.init(u); });
+        authRef.onAuthStateChanged(u => { if(u) auth.sync(u); });
     </script>
 </body>
 </html>
